@@ -1732,3 +1732,83 @@ p {text-wrap:pretty}
   .faq-list details>p {font-size:1rem}
 }
 .hero-description {word-break:keep-all;overflow-wrap:break-word}
+
+/* A single finite light scene, isolated from the static reading layer. */
+.hero-shade {z-index:1;pointer-events:none}
+.hero-atmosphere {
+  position:absolute;
+  inset:var(--header-height) 0 0 34%;
+  z-index:0;
+  overflow:hidden;
+  pointer-events:none;
+  isolation:isolate;
+  mask-image:linear-gradient(90deg,transparent,#000 18%,#000 92%,transparent),linear-gradient(180deg,transparent,#000 12%,#000 86%,transparent);
+  mask-composite:intersect;
+}
+.hero-glow {
+  position:absolute;
+  inset:8% 2% -12% 0;
+  opacity:0;
+  background:radial-gradient(ellipse at 53% 62%,#853d5375 0%,#be8a802e 26%,transparent 63%);
+  mix-blend-mode:screen;
+  transition:transform .18s ease-out;
+}
+.hero-beam {
+  position:absolute;
+  top:-22%;
+  left:-15%;
+  width:52%;
+  height:150%;
+  opacity:0;
+  background:linear-gradient(90deg,transparent 0%,#cf9e9d09 20%,#e6c7b640 48%,#fff4df2e 53%,#c48b9410 70%,transparent 100%);
+  border-radius:50%;
+  mix-blend-mode:screen;
+}
+.hero-filament {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:0;
+  overflow:visible;
+  transform-origin:55% 60%;
+  mix-blend-mode:screen;
+}
+@media (prefers-reduced-motion:no-preference) {
+  .hero[data-light-active="true"] .hero-glow {opacity:.45}
+  .hero[data-light-active="true"] .hero-filament {opacity:.14}
+}
+.hero-bottom {gap:12px;flex-wrap:wrap;min-height:44px}
+.hero-image-note {margin-left:auto}
+.hero-light-control {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  min-height:44px;
+  max-width:100%;
+  padding:9px 14px;
+  border:1px solid #c29ba34d;
+  border-radius:999px;
+  background:#100b1099;
+  color:#e0ced8;
+  font-size:.8125rem;
+  line-height:1.4;
+  word-break:keep-all;
+}
+.hero-light-control[hidden] {display:none}
+.hero-light-control svg {flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}
+.hero-light-control:hover {background:#2d1b25;color:#fff}
+@media (min-width:761px) and (max-width:1100px) and (max-aspect-ratio:1/1) {
+  .hero-atmosphere {inset:auto 0 0 20%;height:68%}
+}
+@media (max-width:760px) and (orientation:portrait) {
+  .hero-atmosphere {inset:auto -4% 0;height:56%}
+}
+@media (max-height:600px) and (min-width:600px) {
+  .hero-atmosphere {inset:var(--header-height) 0 0 42%}
+  .hero-bottom {position:relative;inset:auto;padding-bottom:12px}
+}
+@media (prefers-reduced-motion:reduce) {
+  .hero-atmosphere,.hero-light-control {display:none!important}
+}

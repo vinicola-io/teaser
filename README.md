@@ -4,7 +4,7 @@
 
 - 설치·빌드: `npm ci` → `npm run build`
 - 로컬 확인: `npm run preview` → `http://127.0.0.1:4173`
-- 원본: `src/main.jsx`, `src/styles.css`, `src/client.jsx`. `scripts/build.mjs`가 esbuild로 `dist/`를 만듭니다. 수정 후 다시 빌드합니다.
+- 원본: `src/main.jsx`, `src/styles.css`, `src/client.jsx`, `src/hero-light.jsx`. `scripts/build.mjs`가 esbuild로 `dist/`를 만듭니다. 수정 후 다시 빌드합니다.
 - 링크: `public/site.config.js`의 설문·뉴스레터 Google Forms 응답 URL을 각각 입력하고 다시 빌드합니다. 빈 값·`#`·편집 URL은 준비 중 안내로 처리합니다.
 - 뉴스레터: 미설정 상태에서는 준비 안내만 보여주며 이메일을 입력받지 않습니다. 유효한 Google Forms 전체 URL은 방문자가 열기를 누른 뒤 페이지 안에 표시하고, 단축 URL은 별도 창으로 연결합니다. 실제 수집 안내·수신 동의·해지 안내는 해당 폼에서 설정합니다.
 - 설문 URL이 없을 때 헤더·히어로는 페이지 안의 리서치 안내로 이동합니다. 실제 설문 위치에서는 준비 중 안내를 보여줍니다.
@@ -37,6 +37,12 @@ V와 와인 글라스를 결합한 로고는 `public/assets/logo-symbol.svg`에 
 | 버튼·줄바꿈 | 헤더 버튼은 컴포넌트 규칙을 한 곳에서 정의하고 모바일 수용 기준을 명시한다. pending/ready·긴 문구 모두 검사한다. 줄바꿈을 숨겨도 문장 사이 공백은 남긴다. |
 | 확대·간격 변경 | 320px 리플로와 텍스트 간격 변경을 확인한다. 실제 브라우저 확대는 별도 수동 확인 대상으로 둔다. 추가 텍스트 200% 스트레스에서 헤더와 와인 카드가 내용에 맞춰 줄을 바꿀 수 있게 한다. CSS 스트레스 결과만으로 WCAG 확대 준수를 판정하지 않는다. |
 
+### 첫 화면의 빛 연출
+
+- 사진 영역이 20% 이상 보이면 반사광과 열린 곡선이 3.8초 동안 한 번 지나갑니다. 제목·설명·리서치 버튼은 처음부터 고정해 읽을 수 있습니다.
+- ‘빛 멈추기 / 빛 다시 보기’로 제어합니다. 화면 이탈·탭 숨김 뒤 자동 재개하지 않으며, 마우스를 쓰는 기기에서만 고정된 빛이 포인터에 작게 반응합니다. 터치 스크롤은 가로채지 않습니다.
+- 동작 줄이기는 CSS·JavaScript 양쪽에서 반영하고, JavaScript가 없거나 연출 API를 쓰지 못하면 기존 정지 사진을 보여줍니다. 본문을 숨기거나 새 이미지·영상·애니메이션 라이브러리를 내려받지 않습니다.
+
 ### 렌더링 기준
 
 - 첫 화면의 대표 이미지를 초기 HTML에서 발견할 수 있게 준비한다. 모바일·태블릿 세로·가로 소스를 구분하고 대표 이미지는 eager/high 우선순위를 유지한다. 초기 HTML의 preload와 picture의 조건을 맞춰 중복 다운로드를 피한다.
@@ -46,7 +52,7 @@ V와 와인 글라스를 결합한 로고는 `public/assets/logo-symbol.svg`에 
 - 성능 점수와 디자인 품질을 구분한다. 첫 로드의 미사용 JS 추정량을 그대로 삭제 가능한 코드량으로 해석하지 않는다. 실제 배포 압축·캐시 응답도 확인한다.
 - 760/761px, 899/900px, 높이 649/650px의 기존 경계와 381px ready 버튼을 회귀 검사한다. 자동화는 클릭 직후 값이 아닌 상태 완료 조건을 기다린다.
 
-기준 근거: [WCAG 대비](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html), [리플로](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html), [텍스트 확대](https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html), [Web Vitals](https://web.dev/articles/vitals).
+기준 근거: [애니메이션 성능](https://web.dev/articles/animations-guide), [동작 제어](https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html), [WCAG 대비](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html), [리플로](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html), [텍스트 확대](https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html), [Web Vitals](https://web.dev/articles/vitals).
 
 
 ## 검증 범위

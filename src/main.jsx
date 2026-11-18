@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { normalizeSettings } from "./settings.js";
+import { HeroLight, useHeroLight } from "./hero-light.jsx";
 
 const SettingsContext = createContext(normalizeSettings());
 const asset = (name) => `./assets/${name}`;
@@ -378,13 +379,13 @@ export function App({ settings = {} }) {
   const opener = useRef(null);
   const hero = useRef(null);
   const progressBar = useRef(null);
+  const light = useHeroLight(hero);
   const header = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(72);
   const menuButton = useRef(null);
   const cinematic = useMedia(
     "(min-width: 1024px) and (min-height: 720px) and (prefers-reduced-motion: no-preference)",
   );
-  const reduced = useMedia("(prefers-reduced-motion: reduce)");
   useEffect(() => {
     const node = header.current;
     if (!node) return;
@@ -398,18 +399,12 @@ export function App({ settings = {} }) {
   }, []);
   useEffect(() => {
     let frame = 0;
-    const heroNode = hero.current;
-    const photo = heroNode?.querySelector(".hero-photo");
     const update = () => {
       frame = 0;
       // Read all geometry before local transform writes.
       const max = document.documentElement.scrollHeight - window.innerHeight;
       const pageProgress = max > 0 ? window.scrollY / max : 0;
-      const animateHero = !reduced && window.innerWidth > 760 && window.innerHeight > 600;
-      const rect = animateHero ? heroNode?.getBoundingClientRect() : null;
-      const heroProgress = rect ? Math.max(0, Math.min(1, -rect.top / rect.height)) : 0;
       if (progressBar.current) progressBar.current.style.transform = `scaleX(${pageProgress})`;
-      if (photo) photo.style.transform = animateHero ? `scale(${1 + heroProgress * 0.045})` : "none";
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
     window.addEventListener("scroll", schedule, { passive: true });
@@ -420,7 +415,7 @@ export function App({ settings = {} }) {
       window.removeEventListener("resize", schedule);
       cancelAnimationFrame(frame);
     };
-  }, [reduced]);
+  }, []);
   function pending(type, button) {
     setDialogType(type);
     opener.current = button;
@@ -540,6 +535,7 @@ export function App({ settings = {} }) {
               alt="상표 없는 와인병과 잔의 AI 연출 이미지"
             />
           </picture>
+          <HeroLight />
           <div className="hero-shade" />
           <div className="hero-content shell">
             <p className="hero-location">
@@ -568,6 +564,18 @@ export function App({ settings = {} }) {
             </p>
           </div>
           <div className="hero-bottom shell">
+            <button
+              className="hero-light-control"
+              type="button"
+              hidden={!light.available}
+              onClick={light.onToggle}
+              aria-label={light.running ? "첫 화면 빛 연출 멈추기" : "첫 화면 빛 연출 다시 보기"}
+            >
+              <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+                {light.running ? <path d="M7 5v10M13 5v10" /> : <path d="M7 4.5 15 10l-8 5.5Z" />}
+              </svg>
+              {light.running ? "빛 멈추기" : "빛 다시 보기"}
+            </button>
             <span className="hero-image-note">AI 연출 이미지</span>
           </div>
         </section>
