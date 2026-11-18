@@ -9,4 +9,6 @@
 - 문의 이메일은 `contactEmail`에 입력합니다. 빈 값이면 문의 링크를 표시하지 않습니다.
 - `.openai/hosting.json`은 검토용 비공개 Sites의 식별자입니다. 공개 범위 변경은 별도로 결정합니다.
 
-페이지는 이메일·설문 응답을 저장하거나 방문 추적을 하지 않습니다. 와인 그래픽은 콘텐츠 예시이며, 대표 이미지는 AI로 만든 연출 이미지입니다.
+페이지는 이메일·설문 응답을 저장하거나 방문 추적을 하지 않습니다. 와인 목록은 리서치용 예시이며, 대표 이미지는 AI로 만든 연출 이미지입니다.
+
+한글은 [Noto Sans KR](https://github.com/google/fonts/tree/main/ofl/notosanskr)의 현행 문구 부분집합을 자체 호스팅합니다. 라이선스는 `dist/assets/OFL-NotoSansKR.txt`에 있습니다. 대표 이미지는 화면 크기에 따라 WebP를 제공하고 PNG를 대체 형식으로 유지합니다.
