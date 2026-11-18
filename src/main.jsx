@@ -42,8 +42,8 @@ const chapters = [
         예약한 날 수령.
       </>
     ),
-    text: "홍콩 단일 창구에서 사전 예약 후 수령하는 안입니다. 운영 가능일을 확인해 예약을 확정합니다.",
-    detail: "홍콩 현지 수령 · 사전 예약",
+    text: "홍콩 단일 창구에서 사전 예약 후 수령하는 안입니다. 수령이 어려우면 당시 시세를 참고한 환매 조건 상담도 검토합니다.",
+    detail: "수령은 사전 예약 · 환매 상담은 검토 중",
     image: "hero-cinematic",
   },
 ];
@@ -58,7 +58,7 @@ const faqs = [
   ],
   [
     "수령이 어려워지면 어떻게 하나요?",
-    "당시 시세를 참고해 환매 조건을 상담하는 방향도 검토합니다. 환매 가능 여부·가격·수수료·정산 조건은 개별 협의합니다.",
+    "수령이 어려운 경우, 당시 시세를 참고한 환매 조건 상담도 검토합니다. 환매는 구매 취소에 따른 환불과 다르며, 가능 여부·가격·수수료·정산 조건은 개별 협의합니다. 정산액은 구매한 와인값보다 높거나 낮을 수 있고, 서비스료·보관료 등 비용도 함께 고려해야 합니다.",
   ],
   [
     "한국으로 배송하나요?",
@@ -193,7 +193,7 @@ function Story({ cinematic, headerHeight }) {
       <section
         id="concierge"
         className="story-static"
-        aria-label="구매·보관·예약 수령 안내"
+        aria-label="구매·보관·예약 수령 또는 환매 상담 안내"
       >
         {chapters.map((c, i) => (
           <article className="static-chapter" key={c.id} id={`chapter-${c.id}`}>
@@ -222,7 +222,7 @@ function Story({ cinematic, headerHeight }) {
       id="concierge"
       className="story-scene"
       ref={section}
-      aria-label="구매·보관·예약 수령 안내"
+      aria-label="구매·보관·예약 수령 또는 환매 상담 안내"
     >
       <ol className="sr-only">
         {chapters.map((c) => (
@@ -261,7 +261,7 @@ function Story({ cinematic, headerHeight }) {
           ))}
         </div>
         <div className="story-controls shell">
-          <p>구매·보관·예약 수령</p>
+          <p>구매 → 보관 → 예약 수령</p>
           <div aria-label="서비스 단계 선택">
             {chapters.map((c, i) => (
               <button
@@ -560,7 +560,7 @@ export function App({ settings = {} }) {
                 내 와인 구매 경험 남기기
               </FormLink>
               <a className="hero-explore" href="#concierge">
-                구매·보관·수령 방식 보기<span aria-hidden="true">↓</span>
+                서비스 이용 흐름 보기<span aria-hidden="true">↓</span>
               </a>
             </div>
             <p className="hero-preparing">
