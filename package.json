@@ -6,12 +6,17 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "dev": "npm run build && node scripts/serve.mjs",
-    "preview": "node scripts/serve.mjs"
+    "preview": "node scripts/serve.mjs",
+    "test": "npm run build && npm run test:ui",
+    "test:ui": "playwright test",
+    "test:ui:report": "playwright show-report"
   },
   "dependencies": {
     "preact": "11.2.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.65.1",
+    "axe-core": "4.14.1",
     "esbuild": "^0.28.2",
     "preact-render-to-string": "6.8.3"
   }

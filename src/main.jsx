@@ -30,7 +30,7 @@ const chapters = [
         홍콩에서 보관.
       </>
     ),
-    text: "구매 지원과 첫 12개월 보관을 묶는 유료 서비스 구상을 검토합니다.",
+    text: "구매 지원과 첫 12개월 보관을 묶은 유료 서비스를 구상하고 있습니다.",
     detail: "이후 보관료 별도 · 상세 요금 미정",
     image: "macro-cinematic",
   },
@@ -44,7 +44,7 @@ const chapters = [
         예약한 날 수령.
       </>
     ),
-    text: "홍콩 단일 창구의 예약 수령과, 수령이 어려울 때의 환매 조건 상담에 대한 의견을 듣습니다.",
+    text: "홍콩 단일 창구의 예약 수령과 수령이 어려울 때의 환매 조건 상담에 대해 의견을 듣고 있습니다.",
     detail: "수령은 사전 예약 · 환매 상담은 검토 중",
     image: "hero-cinematic",
   },
@@ -52,19 +52,19 @@ const chapters = [
 const faqs = [
   [
     "어디서, 언제 수령하나요?",
-    "홍콩 단일 창구에서 예약 수령하는 모델을 구상하고 있습니다. 월·금 11~16시 수령과 전일 18시까지 접수하는 안에 대한 의견을 듣습니다(홍콩 시각). 현재 수령 예약은 받지 않습니다.",
+    "홍콩 단일 창구에서 예약 수령하는 방식을 구상하고 있습니다. 홍콩 시각 기준 월·금 11~16시 수령, 전일 18시까지 접수하는 안에 대해 의견을 듣고 있습니다. 현재 수령 예약은 받지 않습니다.",
   ],
   [
     "구매와 보관 비용은 어떻게 되나요?",
-    "구매 지원과 첫 12개월 보관을 수수료에 포함하는 방향으로 준비합니다. 이후 보관료는 별도이며, 상세 요금은 아직 정해지지 않았습니다.",
+    "구매 지원과 첫 12개월 보관을 수수료에 포함하는 방식을 검토하고 있습니다. 이후 보관료는 별도이며, 상세 요금은 아직 정해지지 않았습니다.",
   ],
   [
     "수령이 어려워지면 어떻게 하나요?",
-    "수령이 어려운 경우, 당시 시세를 참고한 환매 조건 상담도 검토합니다. 환매는 구매 취소에 따른 환불과 다르며, 가능 여부·가격·수수료·정산 조건은 미정입니다. 구상대로 거래가 성사된다면 정산액은 구매한 와인값보다 높거나 낮을 수 있고, 서비스료·보관료 등 비용도 함께 고려해야 합니다.",
+    "수령이 어려운 경우, 당시 시세를 참고한 환매 조건 상담도 검토합니다. 환매는 구매 취소에 따른 환불과 다르며, 가능 여부·가격·수수료·정산 조건은 미정입니다. 향후 환매가 성사된다면 정산액은 구매한 와인값보다 높거나 낮을 수 있고, 서비스료·보관료 등 비용도 함께 고려해야 합니다.",
   ],
   [
     "한국으로 배송하나요?",
-    "한국 배송은 제공하지 않습니다. 홍콩 현지에서 예약 수령하는 서비스로 준비하고 있습니다.",
+    "한국 배송은 구상에 포함하지 않습니다. 홍콩 현지에서 예약 수령하는 방식을 검토하고 있습니다.",
   ],
 ];
 function useMedia(query) {
@@ -309,14 +309,14 @@ function Newsletter({ onPending }) {
           </h2>
           <p className="section-description">
             와인 카드와 서비스 준비 소식을 전합니다.
-            <br />첫 소식은 이번 리서치를 마친 뒤 보내드립니다.
+            <br />첫 소식은 이번 수요 조사를 마친 뒤 전해드립니다.
           </p>
         </div>
         <div className="newsletter-form-wrap">
           {!href ? (
             <div className="newsletter-form newsletter-pending" aria-describedby="newsletter-state">
               <p className="newsletter-state-label">구독 신청 준비 중</p>
-              <p className="newsletter-pending-description">구독 신청이 열리면 별도 폼에서 이메일과 수신 동의를 받습니다.</p>
+              <p className="newsletter-pending-description">신청이 열리면 별도 폼에서 이메일과 수신 동의를 받습니다.</p>
               <p id="newsletter-state" className="form-note">현재는 이메일을 수집하지 않습니다.</p>
             </div>
           ) : (
@@ -330,13 +330,13 @@ function Newsletter({ onPending }) {
                     aria-controls="newsletter-embedded"
                     onClick={() => setOpened((v) => !v)}
                   >
-                    {opened ? "구독 폼 닫기" : "구독 폼 열기"}
+                    {opened ? "구독 신청서 닫기" : "구독 신청서 열기"}
                     <span aria-hidden="true">{opened ? "−" : "+"}</span>
                   </button>
                   {opened && (
                     <iframe
                       id="newsletter-embedded"
-                      title="vinicola.io 뉴스레터 신청 Google Forms"
+                      title="vinicola.io 뉴스레터 구독 신청서"
                       src={embedded}
                       className="newsletter-embed"
                     />
@@ -535,14 +535,14 @@ export function App({ settings = {} }) {
             <p className="hero-description">
               프랑스 프리미엄 와인 구매·보관 컨시어지.
               <br />
-              수령은 홍콩 현지에서 사전 예약으로.
+              홍콩 현지에서 사전 예약 후 수령하는 구상입니다.
             </p>
             <div className="hero-actions">
               <FormLink className="button-light" previewHref="#research" pendingLabel="리서치 알아보기" onPending={pending}>
                 내 와인 구매 경험 남기기
               </FormLink>
               <a className="hero-explore" href="#concierge">
-                서비스 이용 흐름 보기<span aria-hidden="true">↓</span>
+                서비스 구상 보기<span aria-hidden="true">↓</span>
               </a>
             </div>
             <p className="hero-preparing">
@@ -552,12 +552,17 @@ export function App({ settings = {} }) {
           <div className="hero-visual">
             <div className="hero-visual-motion">
               <picture className="hero-picture">
+                <source
+                  type="image/webp"
+                  srcSet={`${asset("hero-cutout-320.webp")} 320w, ${asset("hero-cutout-480.webp")} 480w, ${asset("hero-cutout-900.webp")} 900w`}
+                  sizes="(min-width: 1024px) 448px, (min-width: 761px) 34vw, 240px"
+                />
                 <img
                   className="hero-photo"
-                  src={asset("hero-mobile-900.webp")}
-                  srcSet={`${asset("hero-mobile-900.webp")} 900w, ${asset("hero-mobile-1024.webp")} 1024w`}
-                  sizes="(min-width: 1024px) 640px, 100vw"
-                  width="1024" height="1536"
+                  src={asset("hero-cutout-480.png")}
+                  srcSet={`${asset("hero-cutout-480.png")} 480w, ${asset("hero-cutout-900.png")} 900w`}
+                  sizes="(min-width: 1024px) 448px, (min-width: 761px) 34vw, 240px"
+                  width="900" height="1350"
                   alt="상표 없는 와인병과 잔의 AI 연출 이미지"
                   loading="eager" fetchPriority="high" decoding="async"
                 />
@@ -601,7 +606,7 @@ export function App({ settings = {} }) {
               <p>
                 좋아하는 생산자, 기억에 남은 한 해.
                 <br />
-                최근에 구하려던 한 병을 떠올려보세요.
+                최근에 찾던 한 병을 떠올려 주세요.
               </p>
             </div>
             <div className="vintage-content">
@@ -694,7 +699,7 @@ export function App({ settings = {} }) {
             </h2>
             <p className="section-description">
               최근 구매에서 좋았던 점과 아쉬웠던 점을 들려주세요.
-              <br className="desktop-break" /> 먼저 다룰 와인과 구매·보관·수령 방식을 정하는 데 참고하겠습니다.
+              <br className="desktop-break" /> 어떤 와인과 구매·보관·수령 방식이 필요한지 살펴보는 데 참고하겠습니다.
             </p>
             <div className="research-topics">
               <span>구매 경험</span>
@@ -708,7 +713,7 @@ export function App({ settings = {} }) {
               참여 확인 1개 + 질문 7개 · Google Forms
               <br />
               추가 이야기와 연락처는 선택입니다. 기존 구매 방법으로 충분했던
-              경험도 좋습니다.
+              경험도 듣고 싶습니다.
             </p>
             <p className="research-image-note">AI 연출 이미지</p>
           </div>
@@ -770,15 +775,15 @@ export function App({ settings = {} }) {
           <div className="footer-bottom">
             <p>
               Project vinicola.io · 수요 조사 중<br />
-              한국 거주 만 19세 이상을 위한 와인 서비스 리서치입니다.
+              한국에 거주하는 만 19세 이상을 위한 와인 서비스 수요 조사입니다.
             </p>
             <details className="privacy-note">
               <summary>개인정보 안내</summary>
               <p>
                 이 페이지는 설문 응답이나 이메일을 직접 저장하지 않습니다.
-                설문과 뉴스레터는 각각 Google Forms에서 접수하며, 수집 목적·보관
-                기간·문의처와 동의 내용을 각 폼에서 안내합니다. 후속 대화 신청과
-                뉴스레터 수신 동의는 별도로 받습니다.
+                설문과 뉴스레터는 각각 Google Forms에서 접수합니다. 각 폼에서
+                수집 목적·보관 기간·문의처와 동의 내용을 안내합니다. 후속 대화
+                신청과 뉴스레터 수신 동의는 따로 받습니다.
               </p>
             </details>
             <p>© 2026 vinicola.io</p>
@@ -813,7 +818,7 @@ export function App({ settings = {} }) {
         <p id="dialog-description">
           {dialogType === "newsletter"
             ? "구독 신청은 아직 준비 중입니다. 현재 이메일을 수집하지 않습니다."
-            : "설문은 아직 준비 중입니다. 서비스 소개와 빈티지 예시를 살펴보세요."}
+            : "설문을 준비하고 있습니다. 지금은 서비스 구상과 빈티지 예시를 보실 수 있습니다."}
         </p>
         <button
           className="button button-dark"
