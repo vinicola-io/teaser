@@ -75,7 +75,10 @@ Lighthouse 13.6.0, Chromium 151, loopback 정적 서버에서 각 3회 새로 �
 # 상위 프로젝트를 복제한 뒤
 git submodule update --init --recursive
 
-# teaser/ 안에서 수정하고 확인
+# teaser/ 안에서 작업 브랜치를 확인한 뒤 수정
+cd teaser
+git switch main
+git pull --ff-only
 npm ci
 npm run build
 npm run preview
@@ -84,6 +87,7 @@ git commit -m "설명 [실제 작성 모델]"
 git push origin main
 
 # 상위 프로젝트에서 버전 포인터 기록
+cd ..
 git add teaser
 git commit -m "chore: update teaser submodule"
 ```
