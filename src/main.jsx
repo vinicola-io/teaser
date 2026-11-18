@@ -123,13 +123,12 @@ function Photo({
     />
   );
 }
-function Logo({ className = "" }) {
+function Logo({ className = "", dark = false }) {
+  const tone = dark ? "-dark" : "";
   return (
     <span className={`brand ${className}`}>
-      <img src={asset("logo-symbol.svg")} width="32" height="32" alt="" />
-      <span>
-        vinicola<span className="brand-domain">.io</span>
-      </span>
+      <img className="brand-symbol" loading={dark ? "lazy" : "eager"} src={asset(`logo-symbol${tone}.svg`)} width="32" height="32" alt="" />
+      <img className="brand-wordmark" loading={dark ? "lazy" : "eager"} src={asset(`logo-wordmark${tone}.svg`)} width="144" height="32" alt="vinicola.io" />
     </span>
   );
 }
@@ -163,22 +162,23 @@ function FormLink({
     </button>
   );
 }
-function Story({ cinematic }) {
+function Story({ cinematic, headerHeight }) {
   const section = useRef(null);
   const phase = useRef(0);
   const [active, setActive] = useState(0);
   useEffect(() => {
     if (!cinematic) return;
     let frame = 0;
+    const photos = section.current?.querySelectorAll(".story-photo");
     const update = () => {
       frame = 0;
       const el = section.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
-      const travel = el.offsetHeight - (window.innerHeight - 72);
-      const p = Math.max(0, Math.min(1, (72 - rect.top) / Math.max(1, travel)));
-      el.style.setProperty("--story-p", p);
+      const travel = el.offsetHeight - (window.innerHeight - headerHeight);
+      const p = Math.max(0, Math.min(1, (headerHeight - rect.top) / Math.max(1, travel)));
       const next = Math.min(2, Math.floor(p * 3));
+      if (photos?.[next]) photos[next].style.transform = `scale(${1.025 + p * 0.035})`;
       if (next !== phase.current) {
         phase.current = next;
         setActive(next);
@@ -195,15 +195,15 @@ function Story({ cinematic }) {
       window.removeEventListener("resize", schedule);
       cancelAnimationFrame(frame);
     };
-  }, [cinematic]);
+  }, [cinematic, headerHeight]);
   function go(index) {
     const el = section.current;
-    const travel = el.offsetHeight - (window.innerHeight - 72);
+    const travel = el.offsetHeight - (window.innerHeight - headerHeight);
     window.scrollTo({
       top:
         window.scrollY +
         el.getBoundingClientRect().top -
-        72 +
+        headerHeight +
         travel * ((index + 0.35) / 3),
       behavior: "smooth",
     });
@@ -247,7 +247,9 @@ function Story({ cinematic }) {
       <ol className="sr-only">
         {chapters.map((c) => (
           <li key={c.id}>
-            {c.label}. {c.text} {c.detail}
+            <h2>{c.title}</h2>
+            <p>{c.text}</p>
+            <p>{c.detail}</p>
           </li>
         ))}
       </ol>
@@ -427,31 +429,41 @@ function App() {
   const dialog = useRef(null);
   const opener = useRef(null);
   const hero = useRef(null);
+  const progressBar = useRef(null);
+  const header = useRef(null);
+  const [headerHeight, setHeaderHeight] = useState(window.innerWidth <= 760 ? 64 : 72);
   const menuButton = useRef(null);
   const cinematic = useMedia(
-    "(min-width: 900px) and (min-height: 650px) and (prefers-reduced-motion: no-preference)",
+    "(min-width: 1024px) and (min-height: 720px) and (prefers-reduced-motion: no-preference)",
   );
   const reduced = useMedia("(prefers-reduced-motion: reduce)");
   useEffect(() => {
+    const node = header.current;
+    if (!node) return;
+    const observer = new ResizeObserver(() => {
+      const height = Math.ceil(node.getBoundingClientRect().height);
+      document.documentElement.style.setProperty("--header-height", `${height}px`);
+      setHeaderHeight(previous => previous === height ? previous : height);
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
     let frame = 0;
+    const heroNode = hero.current;
+    const photo = heroNode?.querySelector(".hero-photo");
     const update = () => {
       frame = 0;
+      // Read all geometry before local transform writes.
       const max = document.documentElement.scrollHeight - window.innerHeight;
-      document.documentElement.style.setProperty(
-        "--page-p",
-        max > 0 ? window.scrollY / max : 0,
-      );
-      if (hero.current && !reduced) {
-        const r = hero.current.getBoundingClientRect();
-        hero.current.style.setProperty(
-          "--hero-p",
-          Math.max(0, Math.min(1, -r.top / r.height)),
-        );
-      }
+      const pageProgress = max > 0 ? window.scrollY / max : 0;
+      const animateHero = !reduced && window.innerWidth > 760 && window.innerHeight > 600;
+      const rect = animateHero ? heroNode?.getBoundingClientRect() : null;
+      const heroProgress = rect ? Math.max(0, Math.min(1, -rect.top / rect.height)) : 0;
+      if (progressBar.current) progressBar.current.style.transform = `scaleX(${pageProgress})`;
+      if (photo) photo.style.transform = animateHero ? `scale(${1 + heroProgress * 0.045})` : "none";
     };
-    const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
     update();
@@ -506,7 +518,7 @@ function App() {
       <a href="#main" className="skip-link">
         본문으로 바로가기
       </a>
-      <header className="site-header">
+      <header ref={header} className="site-header">
         <div className="header-inner">
           <a
             className="brand-link"
@@ -560,14 +572,15 @@ function App() {
             </button>
           </div>
         </div>
-        <div className="reading-progress" aria-hidden="true" />
+        <div ref={progressBar} className="reading-progress" aria-hidden="true" />
       </header>
       <main id="main">
         <section className="hero" ref={hero} aria-labelledby="hero-title">
           <picture className="hero-picture">
             <source
-              media="(max-width:760px)"
-              srcSet={asset("hero-mobile-900.webp")}
+              media="(max-width: 760px) and (orientation: portrait), (min-width: 761px) and (max-width: 1100px) and (max-aspect-ratio: 1/1)"
+              srcSet={`${asset("hero-mobile-900.webp")} 900w, ${asset("hero-mobile-1024.webp")} 1024w`}
+              sizes="100vw"
             />
             <Photo
               name="hero-cinematic"
@@ -608,7 +621,7 @@ function App() {
             <span>AI 연출 이미지</span>
           </div>
         </section>
-        <Story cinematic={cinematic} />
+        <Story cinematic={cinematic} headerHeight={headerHeight} />
         <section
           id="vintages"
           className="vintage-section"
@@ -645,13 +658,13 @@ function App() {
                 <p className="wine-region">Pauillac, Bordeaux</p>
                 <h3>
                   Château Mouton
-                  <br />
+                  <br />{" "}
                   Rothschild
                 </h3>
                 <p className="wine-year">2020</p>
                 <p>
                   피터 도이그가 그린 라벨.
-                  <br />한 빈티지에 남는 또 하나의 이야기.
+                  <br />{" "}한 빈티지에 남는 또 하나의 이야기.
                 </p>
                 <a
                   href="https://www.chateau-mouton-rothschild.com/chateau-mouton-rothschild/chateau-mouton-rothschild-2020"
@@ -665,13 +678,13 @@ function App() {
                 <p className="wine-region">Margaux, Bordeaux</p>
                 <h3>
                   Château
-                  <br />
+                  <br />{" "}
                   Margaux
                 </h3>
                 <p className="wine-year">2020</p>
                 <p>
                   Decanter 자료의 99/100 평가.
-                  <br />
+                  <br />{" "}
                   당신은 어떤 기준으로 한 병을 고르나요?
                 </p>
                 <a
@@ -686,13 +699,13 @@ function App() {
                 <p className="wine-region">Margaux, Bordeaux</p>
                 <h3>
                   Château
-                  <br />
+                  <br />{" "}
                   Palmer
                 </h3>
                 <p className="wine-year">1999</p>
                 <p>
                   생산자만큼이나 중요한 그해.
-                  <br />
+                  <br />{" "}
                   다시 만나고 싶은 빈티지가 있나요?
                 </p>
                 <a
@@ -838,7 +851,7 @@ function App() {
         >
           ×
         </button>
-        <Logo />
+        <Logo dark />
         <h2 id="dialog-title">
           {dialogType === "newsletter"
             ? "뉴스레터 접수 준비 중"

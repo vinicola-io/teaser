@@ -27,6 +27,12 @@
       type="font/woff2"
       crossorigin
     />
+    <link rel="preload" as="image" href="./assets/hero-mobile-900.webp"
+      imagesrcset="./assets/hero-mobile-900.webp 900w, ./assets/hero-mobile-1024.webp 1024w" imagesizes="100vw"
+      media="(max-width: 760px) and (orientation: portrait), (min-width: 761px) and (max-width: 1100px) and (max-aspect-ratio: 1/1)" fetchpriority="high" />
+    <link rel="preload" as="image" href="./assets/hero-cinematic-1536.webp"
+      imagesrcset="./assets/hero-cinematic-900.webp 900w, ./assets/hero-cinematic-1536.webp 1536w" imagesizes="100vw"
+      media="(max-width: 760px) and (orientation: landscape), (min-width: 1101px), (min-width: 761px) and (min-aspect-ratio: 1.0001/1)" fetchpriority="high" />
     <!-- APP_CSS -->
     <script src="./site.config.js"></script>
   </head>
