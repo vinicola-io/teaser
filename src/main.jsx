@@ -14,7 +14,7 @@ const chapters = [
         구매 조건부터.
       </>
     ),
-    text: "원하는 생산자와 빈티지의 홍콩 구매 조건을 살핍니다.",
+    text: "원하는 생산자와 빈티지를 홍콩에서 구매하는 방식을 구상하고 있습니다.",
     detail: "생산자·빈티지 확인 · 구매 조건 검토",
     image: "collection-cinematic",
   },
@@ -28,7 +28,7 @@ const chapters = [
         홍콩에서 보관.
       </>
     ),
-    text: "구매 지원과 첫 12개월 보관을 묶은 유료 서비스를 준비합니다.",
+    text: "구매 지원과 첫 12개월 보관을 묶는 유료 서비스 구상을 검토합니다.",
     detail: "이후 보관료 별도 · 상세 요금 미정",
     image: "macro-cinematic",
   },
@@ -42,7 +42,7 @@ const chapters = [
         예약한 날 수령.
       </>
     ),
-    text: "홍콩 단일 창구에서 사전 예약 후 수령하는 안입니다. 수령이 어려우면 당시 시세를 참고한 환매 조건 상담도 검토합니다.",
+    text: "홍콩 단일 창구의 예약 수령과, 수령이 어려울 때의 환매 조건 상담에 대한 의견을 듣습니다.",
     detail: "수령은 사전 예약 · 환매 상담은 검토 중",
     image: "hero-cinematic",
   },
@@ -50,7 +50,7 @@ const chapters = [
 const faqs = [
   [
     "어디서, 언제 수령하나요?",
-    "홍콩 단일 창구에서 사전 예약해 수령하는 방식입니다. 월·금 11~16시 수령과 전일 18시까지 접수하는 안을 검토 중입니다(홍콩 시각). 접수 후 가능 여부를 확인해 예약을 확정하며, 운영 가능일은 확정 뒤 안내합니다.",
+    "홍콩 단일 창구에서 예약 수령하는 모델을 구상하고 있습니다. 월·금 11~16시 수령과 전일 18시까지 접수하는 안에 대한 의견을 듣습니다(홍콩 시각). 현재 수령 예약은 받지 않습니다.",
   ],
   [
     "구매와 보관 비용은 어떻게 되나요?",
@@ -58,7 +58,7 @@ const faqs = [
   ],
   [
     "수령이 어려워지면 어떻게 하나요?",
-    "수령이 어려운 경우, 당시 시세를 참고한 환매 조건 상담도 검토합니다. 환매는 구매 취소에 따른 환불과 다르며, 가능 여부·가격·수수료·정산 조건은 개별 협의합니다. 정산액은 구매한 와인값보다 높거나 낮을 수 있고, 서비스료·보관료 등 비용도 함께 고려해야 합니다.",
+    "수령이 어려운 경우, 당시 시세를 참고한 환매 조건 상담도 검토합니다. 환매는 구매 취소에 따른 환불과 다르며, 가능 여부·가격·수수료·정산 조건은 미정입니다. 구상대로 거래가 성사된다면 정산액은 구매한 와인값보다 높거나 낮을 수 있고, 서비스료·보관료 등 비용도 함께 고려해야 합니다.",
   ],
   [
     "한국으로 배송하나요?",
@@ -543,7 +543,7 @@ export function App({ settings = {} }) {
           <div className="hero-shade" />
           <div className="hero-content shell">
             <p className="hero-location">
-              프랑스 프리미엄 와인<span>서비스 준비 중</span>
+              프랑스 프리미엄 와인<span>사업 준비 · 수요 조사</span>
             </p>
             <h1 id="hero-title">
               홍콩에서 구매하고,
@@ -564,7 +564,7 @@ export function App({ settings = {} }) {
               </a>
             </div>
             <p className="hero-preparing">
-              정식 출시 전, 와인 구매 경험을 듣고 있습니다.
+              현재는 수요 조사 중이며, 실제 와인 거래는 진행하지 않습니다.
             </p>
           </div>
           <div className="hero-bottom shell">
@@ -710,14 +710,14 @@ export function App({ settings = {} }) {
           <div>
             <p className="eyebrow">자주 묻는 질문</p>
             <h2 id="faq-title">
-              미리 확인할
+              검토 중인
               <br />
-              이용 조건.
+              서비스 구상.
             </h2>
             <p className="faq-intro">
-              서비스는 리서치 단계이며,
+              현재는 사업 준비를 위한 수요 조사 단계입니다.
               <br />
-              요금과 이용 조건은 검토 중입니다.
+              구매·보관·수령·환매 서비스는 운영하지 않습니다.
             </p>
           </div>
           <div className="faq-list">
@@ -758,7 +758,7 @@ export function App({ settings = {} }) {
           </div>
           <div className="footer-bottom">
             <p>
-              Project vinicola.io · 서비스 준비 중<br />
+              Project vinicola.io · 수요 조사 중<br />
               한국 거주 만 19세 이상을 위한 와인 서비스 리서치입니다.
             </p>
             <details className="privacy-note">
