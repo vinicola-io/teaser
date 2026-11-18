@@ -17,7 +17,7 @@ test("desktop, tablet and mobile preserve readable entry points", async ({ brows
       await visit(page, baseURL);
       await attachScreenshot(page, info, `entry-${width}`);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-      await expect(page.locator('.hero [data-form-link="research"]')).toBeVisible();
+      await expect(page.locator(".hero-description")).toBeVisible();
       await noHorizontalOverflow(page);
       expect(await page.locator(".hero-photo").evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
       expect(await page.locator("#newsletter").evaluate(node => node.closest("main").lastElementChild === node)).toBe(true);
@@ -45,7 +45,7 @@ test("automated WCAG A/AA scan has no violations at desktop, tablet and mobile",
 
 test("320px and doubled default text do not clip the headline or research action", async ({ page, context, baseURL }, info) => {
   await page.setViewportSize({ width: 320, height: 750 });
-  await isolate(context, baseURL);
+  await isolate(context, baseURL, formSettings);
   await visit(page, baseURL);
   await noHorizontalOverflow(page);
   await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
@@ -107,23 +107,16 @@ test("skip link and mobile menu work with keyboard without a reload", async ({ p
   expect(await page.evaluate(() => window.__testNavigationMarker)).toBe(true);
 });
 
-test("pending research dialog traps focus and restores its opener", async ({ page, context, baseURL }) => {
+test("unconnected forms show plain notices without dead actions or editorial clutter", async ({ page, context, baseURL }) => {
   await isolate(context, baseURL);
   await visit(page, baseURL);
-  const trigger = page.locator('#research button[data-form-link="research"]');
-  await trigger.focus();
-  await trigger.press("Space");
-  const dialog = page.getByRole("dialog");
-  await expect(dialog).toBeVisible();
-  await expect(dialog).toContainText(/준비/);
-  await page.locator(".hero a").first().evaluate(node => node.focus());
-  expect(await page.locator(".hero a").first().evaluate(node => node === document.activeElement)).toBe(false);
-  await page.keyboard.press("Escape");
-  await expect(dialog).not.toBeVisible();
-  await expect(trigger).toBeFocused();
-  await trigger.press("Enter");
-  await dialog.getByRole("button", { name: /닫기/ }).first().click();
-  await expect(trigger).toBeFocused();
+  await expect(page.locator("#research .survey-pending")).toHaveText("설문을 준비하고 있습니다.");
+  await expect(page.locator('#research [data-form-link],.hero [data-form-link],#newsletter button,#newsletter input,dialog')).toHaveCount(0);
+  await expect(page.locator(".header-actions .button,.story-controls,.hero-explore,.research-return,main figcaption,.hero-image-note,.research-image-note")).toHaveCount(0);
+  const text = await page.locator("body").innerText();
+  expect(text).not.toMatch(/리서치|서비스 구상|AI 연출|보유 재고|제품 사진/);
+  expect(await page.locator('main img:not([alt=""])').count()).toBe(0);
+  await expect(page.locator(".hero-description")).toContainText("준비");
 });
 
 test("FAQ summaries support native keyboard disclosure", async ({ page, context, baseURL }) => {
@@ -145,13 +138,12 @@ test("FAQ summaries support native keyboard disclosure", async ({ page, context,
 test("empty configuration stays research-only and collects nothing", async ({ page, context, baseURL }) => {
   const blocked = await isolate(context, baseURL, emptySettings);
   await visit(page, baseURL);
-  await expect(page.locator(".hero-preparing")).toContainText(/수요|조사|리서치/);
-  await expect(page.locator(".hero-preparing")).toContainText(/않|없/);
-  await expect(page.locator('.hero [data-form-link="research"]')).toHaveAttribute("href", "#research");
+  await expect(page.locator(".hero-description")).toContainText("준비");
+  await page.locator("#faq summary").first().click();
+  await expect(page.locator("#faq details").first()).toContainText("시작하지 않았습니다");
+  await expect(page.locator('.hero [data-form-link="research"]')).toHaveCount(0);
   await expect(page.locator("#newsletter input, #newsletter iframe, #newsletter form")).toHaveCount(0);
   await expect(page.getByRole("button", { name: /(?:주문|결제|환매|견적).*(?:신청|하기|진행)/ })).toHaveCount(0);
-  await page.locator('#research button[data-form-link="research"]').click();
-  await page.keyboard.press("Escape");
   expect(await page.evaluate(() => localStorage.length + sessionStorage.length)).toBe(0);
   expect(await context.cookies()).toEqual([]);
   expect(blocked).toEqual([]);
@@ -187,7 +179,7 @@ test("a short newsletter URL is an independent external link", async ({ page, co
   const newsletter = page.locator('#newsletter [data-form-link="newsletter"]');
   await expect(newsletter).toHaveAttribute("href", "https://forms.gle/NewsletterFixture");
   await expect(newsletter).toHaveAttribute("target", "_blank");
-  await expect(page.locator('.hero [data-form-link="research"]')).toHaveAttribute("href", "#research");
+  await expect(page.locator('.hero [data-form-link="research"]')).toHaveCount(0);
   await expect(page.locator("iframe")).toHaveCount(0);
 });
 
@@ -198,7 +190,7 @@ test("unsafe and editing URLs cannot become submission links", async ({ browser,
     const page = await context.newPage();
     try {
       await visit(page, baseURL);
-      await expect(page.locator('.hero [data-form-link="research"]')).toHaveAttribute("href", "#research");
+      await expect(page.locator('.hero [data-form-link="research"]')).toHaveCount(0);
       await expect(page.locator('[data-form-link][target="_blank"]')).toHaveCount(0);
       await expect(page.locator("#newsletter input, #newsletter iframe")).toHaveCount(0);
     } finally { await context.close(); }
@@ -217,7 +209,7 @@ test("motion preference changes stop decoration while preserving reading and nat
   await expect.poll(() => page.locator(".hero").evaluate(hero => hero.getAnimations({ subtree: true }).filter(animation => animation.playState === "running").length)).toBe(0);
   await page.evaluate(() => scrollTo(0, 0));
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.locator('.hero [data-form-link="research"]')).toBeVisible();
+  await expect(page.locator(".hero-description")).toBeVisible();
   await noHorizontalOverflow(page);
 });
 
@@ -290,7 +282,7 @@ test("without JavaScript the full service context, FAQ and navigation remain rea
       await details.locator("summary").click();
       await expect(details.locator("p")).toBeVisible();
     }
-    await page.locator('.hero a[href="#concierge"]').click();
+    await page.locator('.header-nav a[href="#concierge"]').click();
     await expect(page).toHaveURL(/#concierge$/);
   } finally { await context.close(); }
 });

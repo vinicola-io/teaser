@@ -7,65 +7,29 @@ const SettingsContext = createContext(normalizeSettings());
 const asset = (name) => `./assets/${name}`;
 const chapters = [
   {
-    id: "selection",
-    label: "구매",
-    title: (
-      <>
-        찾는 한 병,
-        <br />
-        구매 조건부터.
-      </>
-    ),
-    text: "원하는 생산자와 빈티지를 홍콩에서 구매하는 방식을 구상하고 있습니다.",
-    detail: "생산자·빈티지 확인 · 구매 조건 검토",
+    id: "selection", label: "구매",
+    title: <>찾으시는 와인을,<br />홍콩에서.</>,
+    text: "원하시는 생산자와 빈티지의 와인을 홍콩에서 구매할 수 있도록 돕는 서비스입니다.",
     image: "collection-cinematic",
   },
   {
-    id: "storage",
-    label: "보관",
-    title: (
-      <>
-        구매와 수령 사이,
-        <br />
-        홍콩에서 보관.
-      </>
-    ),
-    text: "구매 지원과 첫 12개월 보관을 묶은 유료 서비스를 구상하고 있습니다.",
-    detail: "이후 보관료 별도 · 상세 요금 미정",
+    id: "storage", label: "보관",
+    title: <>구매와 수령 사이,<br />홍콩에서 보관.</>,
+    text: "구매한 와인은 홍콩에 보관하고, 방문하실 때 찾아가는 방식입니다.",
     image: "macro-cinematic",
   },
   {
-    id: "pickup",
-    label: "수령",
-    title: (
-      <>
-        홍콩 현지에서,
-        <br />
-        예약한 날 수령.
-      </>
-    ),
-    text: "홍콩 단일 창구의 예약 수령과 수령이 어려울 때의 환매 조건 상담에 대해 의견을 듣고 있습니다.",
-    detail: "수령은 사전 예약 · 환매 상담은 검토 중",
+    id: "pickup", label: "수령",
+    title: <>홍콩에 오시는 날,<br />예약 후 수령.</>,
+    text: "방문 전에 예약하고, 홍콩의 지정 장소에서 와인을 받습니다.",
     image: "hero-cinematic",
   },
 ];
 const faqs = [
-  [
-    "어디서, 언제 수령하나요?",
-    "홍콩 단일 창구에서 예약 수령하는 방식을 구상하고 있습니다. 홍콩 시각 기준 월·금 11~16시 수령, 전일 18시까지 접수하는 안에 대해 의견을 듣고 있습니다. 현재 수령 예약은 받지 않습니다.",
-  ],
-  [
-    "구매와 보관 비용은 어떻게 되나요?",
-    "구매 지원과 첫 12개월 보관을 수수료에 포함하는 방식을 검토하고 있습니다. 이후 보관료는 별도이며, 상세 요금은 아직 정해지지 않았습니다.",
-  ],
-  [
-    "수령이 어려워지면 어떻게 하나요?",
-    "수령이 어려운 경우, 당시 시세를 참고한 환매 조건 상담도 검토합니다. 환매는 구매 취소에 따른 환불과 다르며, 가능 여부·가격·수수료·정산 조건은 미정입니다. 향후 환매가 성사된다면 정산액은 구매한 와인값보다 높거나 낮을 수 있고, 서비스료·보관료 등 비용도 함께 고려해야 합니다.",
-  ],
-  [
-    "한국으로 배송하나요?",
-    "한국 배송은 구상에 포함하지 않습니다. 홍콩 현지에서 예약 수령하는 방식을 검토하고 있습니다.",
-  ],
+  ["지금 이용할 수 있나요?", "서비스는 아직 시작하지 않았습니다. 와인 구매 경험과 필요한 점을 듣고 있습니다."],
+  ["와인은 어디서 받나요?", "홍콩 현지의 지정 장소에서 사전 예약 후 수령하는 방식으로 준비하고 있습니다. 한국 배송은 포함하지 않습니다. 수령 장소와 일정은 아직 정해지지 않았습니다."],
+  ["구매와 보관 비용은 어떻게 되나요?", "구매 지원 수수료에 첫 12개월 보관을 포함하는 방식을 검토하고 있습니다. 이후 보관료는 별도이며, 요금은 아직 정해지지 않았습니다."],
+  ["수령이 어려워지면 어떻게 하나요?", "당시 시세를 참고해 다시 매각하는 방안도 검토 중입니다. 구매 취소에 따른 환불과는 다릅니다. 매각이 성사된다면 수수료·보관료 등을 뺀 정산액은 구매 가격보다 높거나 낮을 수 있으며, 매각 가능 여부와 조건은 미정입니다."],
 ];
 function useMedia(query) {
   const [matches, setMatches] = useState(false);
@@ -109,39 +73,14 @@ function Logo({ className = "", dark = false }) {
     </span>
   );
 }
-function FormLink({
-  type = "research",
-  children,
-  pendingLabel,
-  previewHref,
-  onPreviewNavigate,
-  className = "",
-  onPending,
-}) {
-  const settings = useContext(SettingsContext);
-  const href = { research: settings.researchUrl, newsletter: settings.newsletterUrl }[type];
-  const common = {
-    "data-form-link": type,
-    "data-link-state": href ? "ready" : "pending",
-    className: `button ${className}`,
-  };
-  return href ? (
-    <a {...common} href={href} target="_blank" rel="noopener noreferrer">
+function FormLink({ children, className = "" }) {
+  const href = useContext(SettingsContext).researchUrl;
+  if (!href) return null;
+  return (
+    <a className={`button ${className}`} data-form-link="research" data-link-state="ready"
+      href={href} target="_blank" rel="noopener noreferrer" aria-label={`${children} (새 창)`}>
       {children}
-      <span aria-hidden="true">↗</span>
     </a>
-  ) : previewHref ? (
-    <a {...common} href={previewHref} onClick={onPreviewNavigate}>{pendingLabel}</a>
-  ) : (
-    <button
-      {...common}
-      type="button"
-      aria-haspopup="dialog"
-      aria-controls="link-dialog"
-      onClick={(e) => onPending(type, e.currentTarget)}
-    >
-      {pendingLabel || "설문 준비 중"}
-    </button>
   );
 }
 function Story({ cinematic, headerHeight }) {
@@ -178,24 +117,12 @@ function Story({ cinematic, headerHeight }) {
       cancelAnimationFrame(frame);
     };
   }, [cinematic, headerHeight]);
-  function go(index) {
-    const el = section.current;
-    const travel = el.offsetHeight - (window.innerHeight - headerHeight);
-    window.scrollTo({
-      top:
-        window.scrollY +
-        el.getBoundingClientRect().top -
-        headerHeight +
-        travel * ((index + 0.35) / 3),
-      behavior: "smooth",
-    });
-  }
   if (!cinematic)
     return (
       <section
         id="concierge"
         className="story-static"
-        aria-label="구매·보관·예약 수령 또는 환매 상담 안내"
+        aria-label="구매·보관·수령"
       >
         {chapters.map((c, i) => (
           <article className="static-chapter" key={c.id} id={`chapter-${c.id}`}>
@@ -206,14 +133,12 @@ function Story({ cinematic, headerHeight }) {
               </p>
               <h2>{c.title}</h2>
               <p className="chapter-description">{c.text}</p>
-              <p className="chapter-detail">{c.detail}</p>
             </div>
             <figure>
               <Photo
                 name={c.image}
-                alt="와인병과 빛의 질감을 표현한 AI 연출 이미지"
+                alt=""
               />
-              <figcaption>AI 연출 이미지</figcaption>
             </figure>
           </article>
         ))}
@@ -224,14 +149,13 @@ function Story({ cinematic, headerHeight }) {
       id="concierge"
       className="story-scene"
       ref={section}
-      aria-label="구매·보관·예약 수령 또는 환매 상담 안내"
+      aria-label="구매·보관·수령"
     >
       <ol className="sr-only">
         {chapters.map((c) => (
           <li key={c.id}>
             <h2>{c.title}</h2>
             <p>{c.text}</p>
-            <p>{c.detail}</p>
           </li>
         ))}
       </ol>
@@ -258,33 +182,15 @@ function Story({ cinematic, headerHeight }) {
               </p>
               <h2>{c.title}</h2>
               <p className="chapter-description">{c.text}</p>
-              <p className="chapter-detail">{c.detail}</p>
             </div>
           ))}
         </div>
-        <div className="story-controls shell">
-          <p>구매 → 보관 → 예약 수령</p>
-          <div aria-label="서비스 단계 선택">
-            {chapters.map((c, i) => (
-              <button
-                type="button"
-                key={c.id}
-                onClick={() => go(i)}
-                aria-current={active === i ? "step" : undefined}
-                aria-label={`${c.label} 안내 보기`}
-              >
-                <span className="chapter-dot" />
-                {c.label}
-              </button>
-            ))}
-          </div>
-          <span className="image-credit">AI 연출 이미지</span>
-        </div>
+
       </div>
     </section>
   );
 }
-function Newsletter({ onPending }) {
+function Newsletter() {
   const [opened, setOpened] = useState(false);
   const href = useContext(SettingsContext).newsletterUrl;
   let embedded = null;
@@ -301,23 +207,17 @@ function Newsletter({ onPending }) {
     >
       <div className="newsletter-inner shell">
         <div>
-          <p className="eyebrow">뉴스레터 · 선택 구독</p>
           <h2 id="newsletter-title">
-            서비스 준비 소식을
+            서비스 소식을
             <br />
             이메일로 받아보세요.
           </h2>
-          <p className="section-description">
-            와인 카드와 서비스 준비 소식을 전합니다.
-            <br />첫 소식은 이번 수요 조사를 마친 뒤 전해드립니다.
-          </p>
+
         </div>
         <div className="newsletter-form-wrap">
           {!href ? (
             <div className="newsletter-form newsletter-pending" aria-describedby="newsletter-state">
-              <p className="newsletter-state-label">구독 신청 준비 중</p>
-              <p className="newsletter-pending-description">신청이 열리면 별도 폼에서 이메일과 수신 동의를 받습니다.</p>
-              <p id="newsletter-state" className="form-note">현재는 이메일을 수집하지 않습니다.</p>
+              <p id="newsletter-state" className="newsletter-pending-description">뉴스레터 구독을 준비하고 있습니다.</p>
             </div>
           ) : (
             <div className="newsletter-ready">
@@ -330,7 +230,7 @@ function Newsletter({ onPending }) {
                     aria-controls="newsletter-embedded"
                     onClick={() => setOpened((v) => !v)}
                   >
-                    {opened ? "구독 신청서 닫기" : "구독 신청서 열기"}
+                    {opened ? "신청서 닫기" : "뉴스레터 구독하기"}
                     <span aria-hidden="true">{opened ? "−" : "+"}</span>
                   </button>
                   {opened && (
@@ -341,14 +241,14 @@ function Newsletter({ onPending }) {
                       className="newsletter-embed"
                     />
                   )}
-                  <a
+                  {opened && <a
                     className="text-link"
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    새 창에서 구독 신청 ↗
-                  </a>
+                    새 창에서 열기
+                  </a>}
                 </>
               ) : (
                 <a
@@ -359,14 +259,12 @@ function Newsletter({ onPending }) {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  뉴스레터 구독 신청 ↗
+                  뉴스레터 구독하기
                 </a>
               )}
             </div>
           )}
-          <p className="form-note">
-            뉴스레터 수신 동의는 설문 참여나 후속 대화 신청과 별도로 받습니다.
-          </p>
+
         </div>
       </div>
     </section>
@@ -375,9 +273,6 @@ function Newsletter({ onPending }) {
 export function App({ settings = {} }) {
   const config = normalizeSettings(settings);
   const [menu, setMenu] = useState(false);
-  const [dialogType, setDialogType] = useState("research");
-  const dialog = useRef(null);
-  const opener = useRef(null);
   const hero = useRef(null);
   const progressBar = useRef(null);
   useHeroLight(hero);
@@ -418,13 +313,6 @@ export function App({ settings = {} }) {
       cancelAnimationFrame(frame);
     };
   }, []);
-  function pending(type, button) {
-    setDialogType(type);
-    opener.current = button;
-    requestAnimationFrame(() => {
-      if (dialog.current && !dialog.current.open) dialog.current.showModal();
-    });
-  }
   useLayoutEffect(() => {
     if (!menu) return;
     document.querySelector(".header-nav a")?.focus({ preventScroll: true });
@@ -480,32 +368,15 @@ export function App({ settings = {} }) {
             aria-label="주요 메뉴"
           >
             <a href="#concierge" onClick={closeMenu}>
-              컨시어지
+              서비스 소개
             </a>
             <a href="#vintages" onClick={closeMenu}>
-              빈티지
+              와인
             </a>
-            <a href="#faq" onClick={closeMenu}>
-              FAQ
-            </a>
-            <a
-              href="#research"
-              className="mobile-research-link"
-              onClick={closeMenu}
-            >
-              리서치
-            </a>
+            <a href="#research" onClick={closeMenu}>구매 경험</a>
+            <a href="#faq" onClick={closeMenu}>자주 묻는 질문</a>
           </nav>
           <div className="header-actions">
-            <FormLink
-              className="button-header"
-              pendingLabel="리서치 안내"
-              previewHref="#research"
-              onPreviewNavigate={closeMenu}
-              onPending={pending}
-            >
-              리서치 참여
-            </FormLink>
             <button
               ref={menuButton}
               className="menu-toggle"
@@ -526,28 +397,18 @@ export function App({ settings = {} }) {
         <section className="hero hero--editorial" ref={hero} aria-labelledby="hero-title">
           <div className="hero-content shell">
             <p className="hero-location">
-              프랑스 프리미엄 와인<span>사업 준비 · 수요 조사</span>
+              홍콩 와인 컨시어지
             </p>
             <h1 id="hero-title" className="hero-title-motion">
               <span className="hero-title-line">홍콩에서 구매하고,</span>{" "}
               <span className="hero-title-line">찾아갈 때까지 보관.</span>
             </h1>
             <p className="hero-description">
-              프랑스 프리미엄 와인 구매·보관 컨시어지.
-              <br />
-              홍콩 현지에서 사전 예약 후 수령하는 구상입니다.
+              프랑스 와인 구매·보관 서비스를 준비하고 있습니다.
             </p>
-            <div className="hero-actions">
-              <FormLink className="button-light" previewHref="#research" pendingLabel="리서치 알아보기" onPending={pending}>
-                내 와인 구매 경험 남기기
-              </FormLink>
-              <a className="hero-explore" href="#concierge">
-                서비스 구상 보기<span aria-hidden="true">↓</span>
-              </a>
-            </div>
-            <p className="hero-preparing">
-              현재는 수요 조사 중이며, 실제 와인 거래는 진행하지 않습니다.
-            </p>
+            {config.researchUrl && <div className="hero-actions">
+              <FormLink className="button-light">와인 구매 경험 나누기</FormLink>
+            </div>}
           </div>
           <div className="hero-visual">
             <div className="hero-visual-motion">
@@ -563,16 +424,13 @@ export function App({ settings = {} }) {
                   srcSet={`${asset("hero-cutout-480.png")} 480w, ${asset("hero-cutout-900.png")} 900w`}
                   sizes="(min-width: 1024px) 448px, (min-width: 761px) 34vw, 240px"
                   width="900" height="1350"
-                  alt="상표 없는 와인병과 잔의 AI 연출 이미지"
+                  alt=""
                   loading="eager" fetchPriority="high" decoding="async"
                 />
               </picture>
               <HeroLight />
               <div className="hero-shade" />
             </div>
-          </div>
-          <div className="hero-bottom shell">
-            <span className="hero-image-note">AI 연출 이미지</span>
           </div>
         </section>
         <Story cinematic={cinematic} headerHeight={headerHeight} />
@@ -584,17 +442,12 @@ export function App({ settings = {} }) {
           <div className="shell">
             <div className="vintage-heading">
               <div>
-                <p className="eyebrow">빈티지 예시 · 보르도</p>
                 <h2 id="vintage-title">
-                  다시 찾고 싶은
-                  <br />
-                  빈티지가 있나요?
+                  어떤 와인을<br />찾고 계신가요?
                 </h2>
               </div>
               <p>
-                좋아하는 생산자, 기억에 남은 한 해.
-                <br />
-                최근에 찾던 한 병을 떠올려 주세요.
+                좋아하시는 생산자와 빈티지를 들려주세요.
               </p>
             </div>
             <div className="vintage-content">
@@ -607,16 +460,6 @@ export function App({ settings = {} }) {
                   Rothschild
                 </h3>
                 <p className="wine-year">2020</p>
-                <p>
-                  2020년 라벨을 그린 작가, 피터 도이그.
-                </p>
-                <a
-                  href="https://www.chateau-mouton-rothschild.com/chateau-mouton-rothschild/chateau-mouton-rothschild-2020"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  2020년 라벨 이야기 ↗
-                </a>
               </article>
               <article>
                 <p className="wine-region">Margaux, Bordeaux</p>
@@ -626,16 +469,6 @@ export function App({ settings = {} }) {
                   Margaux
                 </h3>
                 <p className="wine-year">2020</p>
-                <p>
-                  Decanter의 2025년 자료에 실린 99/100점.
-                </p>
-                <a
-                  href="https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/08/Decanter-Value-Index-Chateau-Margaux.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Decanter 평가 자료 ↗
-                </a>
               </article>
               <article>
                 <p className="wine-region">Margaux, Bordeaux</p>
@@ -645,28 +478,15 @@ export function App({ settings = {} }) {
                   Palmer
                 </h3>
                 <p className="wine-year">1999</p>
-                <a
-                  href="https://www.chateau-palmer.com/en/wine-library"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  생산자의 와인 라이브러리 ↗
-                </a>
               </article>
             </div>
             <figure className="collection-photo">
               <Photo
                 name="collection-cinematic"
-                alt="상표 없는 와인 세 병의 AI 연출 이미지"
+                alt=""
               />
-              <figcaption>
-                AI 연출 이미지 · 소개한 와인의 제품 사진이 아닙니다.
-              </figcaption>
             </figure>
             </div>
-            <p className="section-fineprint">
-              취향과 구매 경험을 떠올리기 위한 예시입니다. 판매 상품이나 보유 재고를 뜻하지 않습니다.
-            </p>
           </div>
         </section>
         <section
@@ -679,31 +499,22 @@ export function App({ settings = {} }) {
           </div>
           <div className="research-shade" />
           <div className="research-content shell">
-            <p className="eyebrow">와인을 꾸준히 구매하는 분께</p>
             <h2 id="research-title">
               최근에 찾던 와인,
               <br />
               어떻게 구하셨나요?
             </h2>
             <p className="section-description">
-              최근 구매에서 좋았던 점과 아쉬웠던 점을 들려주세요.
-              <br className="desktop-break" /> 어떤 와인과 구매·보관·수령 방식이 필요한지 살펴보는 데 참고하겠습니다.
+              최근 와인을 구매하면서 좋았던 점과 아쉬웠던 점을 들려주세요.
             </p>
-            <div className="research-topics">
-              <span>구매 경험</span>
-              <span>보관의 필요</span>
-              <span>홍콩 예약 수령</span>
-            </div>
-            <FormLink className="button-light" onPending={pending}>
-              내 와인 구매 경험 남기기
-            </FormLink>
-            <p className="form-note">
-              참여 확인 1개 + 질문 7개 · Google Forms
-              <br />
-              추가 이야기와 연락처는 선택입니다. 기존 구매 방법으로 충분했던
-              경험도 듣고 싶습니다.
-            </p>
-            <p className="research-image-note">AI 연출 이미지</p>
+            {config.researchUrl ? (
+              <>
+                <FormLink className="button-light">설문에 답하기</FormLink>
+                <p className="form-note">참여 확인 후 질문 7개 · 추가 의견과 연락처는 선택입니다.</p>
+              </>
+            ) : (
+              <p className="survey-pending" role="status">설문을 준비하고 있습니다.</p>
+            )}
           </div>
         </section>
         <section
@@ -712,17 +523,7 @@ export function App({ settings = {} }) {
           aria-labelledby="faq-title"
         >
           <div>
-            <p className="eyebrow">자주 묻는 질문</p>
-            <h2 id="faq-title">
-              검토 중인
-              <br />
-              서비스 구상.
-            </h2>
-            <p className="faq-intro">
-              현재는 사업 준비를 위한 수요 조사 단계입니다.
-              <br />
-              구매·보관·수령·환매 서비스는 운영하지 않습니다.
-            </p>
+            <h2 id="faq-title">자주 묻는 질문</h2>
           </div>
           <div className="faq-list">
             {faqs.map(([q, a]) => (
@@ -734,10 +535,9 @@ export function App({ settings = {} }) {
                 <p>{a}</p>
               </details>
             ))}
-            <a className="text-link research-return" href="#research">리서치 안내로 돌아가기</a>
           </div>
         </section>
-        <Newsletter onPending={pending} />
+        <Newsletter />
       </main>
       <footer className="site-footer">
         <div className="shell">
@@ -749,11 +549,6 @@ export function App({ settings = {} }) {
             >
               <Logo />
             </a>
-            <p>
-              프랑스의 빈티지.
-              <br />
-              홍콩이라는 선택지.
-            </p>
             {email && (
               <a href={`mailto:${email}`} className="contact-link">
                 {email}
@@ -762,60 +557,20 @@ export function App({ settings = {} }) {
           </div>
           <div className="footer-bottom">
             <p>
-              Project vinicola.io · 수요 조사 중<br />
-              한국에 거주하는 만 19세 이상을 위한 와인 서비스 수요 조사입니다.
+              한국에 거주하는 만 19세 이상을 위한 설문입니다.
             </p>
             <details className="privacy-note">
               <summary>개인정보 안내</summary>
               <p>
-                이 페이지는 설문 응답이나 이메일을 직접 저장하지 않습니다.
-                설문과 뉴스레터는 각각 Google Forms에서 접수합니다. 각 폼에서
-                수집 목적·보관 기간·문의처와 동의 내용을 안내합니다. 후속 대화
-                신청과 뉴스레터 수신 동의는 따로 받습니다.
+                설문·구독 신청서에서 수집 목적, 보관 기간, 문의처를 안내합니다.
+                후속 연락과 뉴스레터 수신 동의는 각각 받습니다.
               </p>
             </details>
             <p>© 2026 vinicola.io</p>
           </div>
         </div>
       </footer>
-      <dialog
-        ref={dialog}
-        id="link-dialog"
-        className="link-dialog"
-        aria-labelledby="dialog-title"
-        aria-describedby="dialog-description"
-        onClose={() => {
-          opener.current?.focus({ preventScroll: true });
-          opener.current = null;
-        }}
-      >
-        <button
-          className="dialog-close"
-          type="button"
-          aria-label="안내 닫기"
-          onClick={() => dialog.current.close()}
-        >
-          ×
-        </button>
-        <Logo dark />
-        <h2 id="dialog-title">
-          {dialogType === "newsletter"
-            ? "구독 신청 준비 중"
-            : "설문 준비 중"}
-        </h2>
-        <p id="dialog-description">
-          {dialogType === "newsletter"
-            ? "구독 신청은 아직 준비 중입니다. 현재 이메일을 수집하지 않습니다."
-            : "설문을 준비하고 있습니다. 지금은 서비스 구상과 빈티지 예시를 보실 수 있습니다."}
-        </p>
-        <button
-          className="button button-dark"
-          type="button"
-          onClick={() => dialog.current.close()}
-        >
-          닫기
-        </button>
-      </dialog>
+
     </>
     </SettingsContext.Provider>
   );

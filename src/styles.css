@@ -169,7 +169,7 @@ button {
 .header-nav {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 4px 28px;
   font-size: 0.875rem;
   color: #d0cdd0;
@@ -1911,3 +1911,8 @@ p {text-wrap:pretty}
 @media (min-width:1024px) {
   .hero--editorial .hero-visual {height:clamp(560px,53vw,720px)}
 }
+
+/* The invitation stays readable even before the survey link is connected. */
+.survey-pending {margin:1.75rem 0 0;color:#d4c5ce;font-size:.9375rem;line-height:1.7}
+.newsletter-pending {padding:0;background:none;border:0;box-shadow:none}
+.newsletter-pending-description {margin:0;color:var(--muted);font-size:1rem;line-height:1.8}
