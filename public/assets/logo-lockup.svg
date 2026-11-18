@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 72" fill="none" color="#ede8df" role="img" aria-labelledby="vinicola-lockup-title">
+  <title id="vinicola-lockup-title">vinicola.io</title>
+  <desc>The vinicola.io name beside its V-shaped wine-glass symbol.</desc>
+  <g transform="translate(0 4)">
+    <path d="M12 10 25 32Q28 38 32 40Q36 38 39 32L52 10" stroke="currentColor" stroke-width="3.6" stroke-linecap="butt" stroke-linejoin="round"/>
+    <path d="M32 40V55M23 55H41" stroke="currentColor" stroke-width="2.8" stroke-linecap="butt"/>
+  </g>
+  <text x="79" y="49" fill="currentColor" font-family="Baskerville, 'Times New Roman', serif" font-size="43" font-weight="400" letter-spacing="-1.5">vinicola.io</text>
+</svg>
