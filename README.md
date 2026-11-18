@@ -16,7 +16,7 @@ V와 와인 글라스를 결합한 로고는 `public/assets/logo-symbol.svg`에 
 
 워드마크는 [Noto Serif](https://github.com/google/fonts/tree/main/ofl/notoserif) 글리프를 SVG 경로로 고정했다. 별도 서체 다운로드가 없으며 라이선스는 `public/assets/OFL-NotoSerif.txt`에 있다. 파비콘은 16px용 별도 도형이다.
 
-한글은 [Noto Sans KR](https://github.com/google/fonts/tree/main/ofl/notosanskr) 현행 문구의 부분집합입니다. 문구에 새로운 한글 글자를 추가할 때 부분집합을 갱신합니다. 라이선스는 `public/assets/OFL-NotoSansKR.txt`에 있습니다.
+한글은 [Noto Sans KR](https://github.com/google/fonts/tree/main/ofl/notosanskr) 현행 문구의 부분집합입니다. 문구에 새로운 한글 글자를 추가할 때 부분집합을 갱신합니다. 빌드는 폰트 내용 해시를 파일명과 CSS·preload에 함께 반영해 재방문자의 이전 캐시와 구분합니다. 라이선스는 `public/assets/OFL-NotoSansKR.txt`에 있습니다.
 
 ## 디자인·렌더링 기준
 
