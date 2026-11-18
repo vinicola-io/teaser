@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { normalizeSettings } from "./settings.js";
 import { HeroLight, useHeroLight } from "./hero-light.jsx";
+import { useHeroEntrance } from "./hero-entrance.js";
 
 const SettingsContext = createContext(normalizeSettings());
 const asset = (name) => `./assets/${name}`;
@@ -380,6 +381,7 @@ export function App({ settings = {} }) {
   const hero = useRef(null);
   const progressBar = useRef(null);
   const light = useHeroLight(hero);
+  useHeroEntrance(hero);
   const header = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(72);
   const menuButton = useRef(null);
@@ -521,30 +523,14 @@ export function App({ settings = {} }) {
         <div ref={progressBar} className="reading-progress" aria-hidden="true" />
       </header>
       <main id="main">
-        <section className="hero" ref={hero} aria-labelledby="hero-title">
-          <picture className="hero-picture">
-            <source
-              media="(max-width: 760px) and (orientation: portrait), (min-width: 761px) and (max-width: 1100px) and (max-aspect-ratio: 1/1)"
-              srcSet={`${asset("hero-mobile-900.webp")} 900w, ${asset("hero-mobile-1024.webp")} 1024w`}
-              sizes="100vw"
-            />
-            <Photo
-              name="hero-cinematic"
-              priority
-              className="hero-photo"
-              alt="상표 없는 와인병과 잔의 AI 연출 이미지"
-            />
-          </picture>
-          <HeroLight />
-          <div className="hero-shade" />
+        <section className="hero hero--editorial" ref={hero} aria-labelledby="hero-title">
           <div className="hero-content shell">
             <p className="hero-location">
               프랑스 프리미엄 와인<span>사업 준비 · 수요 조사</span>
             </p>
-            <h1 id="hero-title">
-              홍콩에서 구매하고,
-              <br />
-              찾아갈 때까지 보관.
+            <h1 id="hero-title" className="hero-title-motion">
+              <span className="hero-title-line">홍콩에서 구매하고,</span>{" "}
+              <span className="hero-title-line">찾아갈 때까지 보관.</span>
             </h1>
             <p className="hero-description">
               프랑스 프리미엄 와인 구매·보관 컨시어지.
@@ -563,13 +549,30 @@ export function App({ settings = {} }) {
               현재는 수요 조사 중이며, 실제 와인 거래는 진행하지 않습니다.
             </p>
           </div>
+          <div className="hero-visual">
+            <div className="hero-visual-motion">
+              <picture className="hero-picture">
+                <img
+                  className="hero-photo"
+                  src={asset("hero-mobile-900.webp")}
+                  srcSet={`${asset("hero-mobile-900.webp")} 900w, ${asset("hero-mobile-1024.webp")} 1024w`}
+                  sizes="(min-width: 1024px) 640px, 100vw"
+                  width="1024" height="1536"
+                  alt="상표 없는 와인병과 잔의 AI 연출 이미지"
+                  loading="eager" fetchPriority="high" decoding="async"
+                />
+              </picture>
+              <HeroLight />
+              <div className="hero-shade" />
+            </div>
+          </div>
           <div className="hero-bottom shell">
             <button
               className="hero-light-control"
               type="button"
               hidden={!light.available}
               onClick={light.onToggle}
-              aria-label={light.running ? "첫 화면 빛 연출 멈추기" : "첫 화면 빛 연출 다시 보기"}
+              aria-label={light.running ? "빛 멈추기 (첫 화면 연출)" : "빛 다시 보기 (첫 화면 연출)"}
             >
               <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
                 {light.running ? <path d="M7 5v10M13 5v10" /> : <path d="M7 4.5 15 10l-8 5.5Z" />}

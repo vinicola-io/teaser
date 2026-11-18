@@ -123,7 +123,7 @@ export function useHeroLight(heroRef) {
           { opacity: 0, transform: "translate3d(-12px, 9px, 0)" },
           { opacity: 0.18, offset: 0.26 },
           { opacity: 0.32, offset: 0.62 },
-          { opacity: 0.14, transform: "translate3d(0, 0, 0)" },
+          { opacity: 0, transform: "translate3d(0, 0, 0)" },
         ], { duration: DURATION, easing: "ease-out", iterations: 1, fill: "none" }));
       } catch {
         failed = true;
