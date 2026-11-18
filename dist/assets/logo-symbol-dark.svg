@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32" fill="none" color="#1c1c20" role="img" aria-labelledby="vinicola-symbol-title">
-  <title id="vinicola-symbol-title">vinicola.io</title>
-  <desc>A V-shaped open wine glass with a stem, optically enlarged for a 32-pixel icon.</desc>
-  <path d="M8.5 6 24 31.5Q27 37.5 32 40Q37 37.5 40 31.5L55.5 6" stroke="currentColor" stroke-width="3.6" stroke-linecap="butt" stroke-linejoin="round"/>
-  <path d="M32 40V58M21.5 58H42.5" stroke="currentColor" stroke-width="3.2" stroke-linecap="butt"/>
-</svg>

@@ -1,3 +1,6 @@
 node_modules/
+dist/
+.openai/
 .sites-runtime/
 *.local
+.DS_Store

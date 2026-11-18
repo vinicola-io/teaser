@@ -1,6 +1,6 @@
 # vinicola.io 티저 SPA
 
-마스터 v4.4의 서비스 조건을 바탕으로 만든 React 단일 페이지입니다. 스크롤 스토리는 데스크톱에서 장면을 전환하고, 모바일·동작 줄이기 설정에서는 세 장면을 차례로 읽도록 구성했습니다.
+홍콩 기반 프리미엄 와인 구매·보관 컨시어지를 소개하고 구매 경험을 듣는 React 티저 페이지입니다. 스크롤 스토리는 데스크톱에서 장면을 전환하고, 모바일·동작 줄이기 설정에서는 세 장면을 차례로 읽도록 구성했습니다.
 
 - 설치·빌드: `npm ci` → `npm run build`
 - 로컬 확인: `npm run preview` → `http://127.0.0.1:4173`
@@ -8,7 +8,8 @@
 - 링크: `public/site.config.js`의 설문·뉴스레터 Google Forms 응답 URL을 각각 입력하고 다시 빌드합니다. 빈 값·`#`·편집 URL은 준비 중 안내로 처리합니다.
 - 뉴스레터: 미설정 상태의 이메일·동의 항목은 비활성 미리보기입니다. 유효한 Google Forms 전체 URL은 방문자가 열기를 누른 뒤 페이지 안에 표시하고, 단축 URL은 별도 창으로 연결합니다. 실제 수집 안내·수신 동의·해지 안내는 해당 폼에서 설정합니다.
 - 문의 이메일이 없으면 문의 링크를 표시하지 않습니다. 사이트 자체에는 응답 저장·추적·결제 기능이 없습니다.
-- `.openai/hosting.json`은 기존 비공개 Sites의 식별자입니다. 공개 범위는 유지합니다.
+- 배포: `main` 푸시 → GitHub Actions에서 `npm ci`·`npm run build` → `dist/`를 GitHub Pages에 배포합니다. 빌드 결과는 Git으로 관리하지 않습니다.
+- 공개 주소: https://vinicola-io.github.io/teaser/ . 현재 설정은 GitHub 기본 주소를 사용하며 도메인·DNS는 변경하지 않습니다.
 
 V와 와인 글라스를 결합한 로고는 `public/assets/logo-symbol.svg`에 있습니다. 보틀·매크로·컬렉션 사진은 차콜과 메를로 조명을 맞춘 AI 연출컷으로, 특정 샤토·빈티지의 실물 사진이나 재고를 표현하지 않습니다. 실제 모델 ID는 이미지 도구에서 반환하지 않았습니다. 제작 프롬프트와 검토 이력은 Git 커밋에 남깁니다.
 
@@ -64,3 +65,27 @@ Lighthouse 13.6.0, Chromium 151, loopback 정적 서버에서 각 3회 새로 �
 대표 이미지의 초기 HTML 발견 여부는 통과했다. 모바일 LCP는 목표 2.5초에 못 미쳐 첫 로드 개선이 남아 있다.
 
 6.5초 프로그램 스크롤·CPU4배 제한 단일 비교에서 스타일 재계산은 데스크톱 2.446→0.114초, 모바일 1.873→0.055초였다. 화면 전체 변수 대신 개별 transform을 갱신한 결과이며, 실제 기기 FPS·배터리 개선률로 해석하지 않는다.
+
+
+## 상위 프로젝트와 작업 순서
+
+상위 `vinicola.io` 프로젝트는 이 저장소를 `teaser/` Git submodule로 참조합니다. 페이지 변경은 이 저장소에서 커밋·푸시하고, 상위 프로젝트에서 변경된 submodule 커밋을 별도로 기록합니다.
+
+```sh
+# 상위 프로젝트를 복제한 뒤
+git submodule update --init --recursive
+
+# teaser/ 안에서 수정하고 확인
+npm ci
+npm run build
+npm run preview
+git add <수정한-파일>
+git commit -m "설명 [실제 작성 모델]"
+git push origin main
+
+# 상위 프로젝트에서 버전 포인터 기록
+git add teaser
+git commit -m "chore: update teaser submodule"
+```
+
+단독 작업은 `git clone git@github.com:vinicola-io/teaser.git`으로 시작합니다. Pages 작업 결과는 저장소 Actions에서 확인합니다. 배포 규칙은 [GitHub 공식 안내](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)를 따릅니다.
