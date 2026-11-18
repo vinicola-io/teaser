@@ -1,0 +1,9 @@
+/* Reserve the enhanced story's footprint before JS and at direct hash entry.
+   Without JS the complete three-chapter static content remains readable. */
+@media (min-width: 1024px) and (min-height: 720px) and (prefers-reduced-motion: no-preference) {
+  .story-static {
+    min-height: 230svh;
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
+  }
+}

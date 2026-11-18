@@ -1,30 +1,7 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { createRoot } from "react-dom/client";
-import "./styles.css";
+import React, { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { normalizeSettings } from "./settings.js";
 
-const config = window.VINICOLA_CONFIG || {};
-function formURL(value) {
-  if (typeof value !== "string" || !value.trim()) return null;
-  try {
-    const u = new URL(value.trim());
-    if (u.protocol !== "https:" || u.username || u.password || u.port)
-      return null;
-    const short =
-      u.hostname === "forms.gle" && /^\/[A-Za-z0-9_-]+\/?$/.test(u.pathname);
-    const response =
-      u.hostname === "docs.google.com" &&
-      /^\/forms\/(?:u\/\d+\/)?d\/(?:e\/)?[A-Za-z0-9_-]+\/viewform\/?$/.test(
-        u.pathname,
-      );
-    return short || response ? u.href : null;
-  } catch {
-    return null;
-  }
-}
-const destinations = {
-  research: formURL(config.researchUrl),
-  newsletter: formURL(config.newsletterUrl),
-};
+const SettingsContext = createContext(normalizeSettings());
 const asset = (name) => `./assets/${name}`;
 const chapters = [
   {
@@ -89,9 +66,7 @@ const faqs = [
   ],
 ];
 function useMedia(query) {
-  const [matches, setMatches] = useState(
-    () => window.matchMedia(query).matches,
-  );
+  const [matches, setMatches] = useState(false);
   useEffect(() => {
     const media = window.matchMedia(query);
     const update = () => setMatches(media.matches);
@@ -141,7 +116,8 @@ function FormLink({
   className = "",
   onPending,
 }) {
-  const href = destinations[type];
+  const settings = useContext(SettingsContext);
+  const href = { research: settings.researchUrl, newsletter: settings.newsletterUrl }[type];
   const common = {
     "data-form-link": type,
     "data-link-state": href ? "ready" : "pending",
@@ -308,7 +284,7 @@ function Story({ cinematic, headerHeight }) {
 }
 function Newsletter({ onPending }) {
   const [opened, setOpened] = useState(false);
-  const href = destinations.newsletter;
+  const href = useContext(SettingsContext).newsletterUrl;
   let embedded = null;
   if (href && new URL(href).hostname === "docs.google.com") {
     const u = new URL(href);
@@ -394,7 +370,8 @@ function Newsletter({ onPending }) {
     </section>
   );
 }
-function App() {
+export function App({ settings = {} }) {
+  const config = normalizeSettings(settings);
   const [menu, setMenu] = useState(false);
   const [dialogType, setDialogType] = useState("research");
   const dialog = useRef(null);
@@ -402,7 +379,7 @@ function App() {
   const hero = useRef(null);
   const progressBar = useRef(null);
   const header = useRef(null);
-  const [headerHeight, setHeaderHeight] = useState(window.innerWidth <= 760 ? 64 : 72);
+  const [headerHeight, setHeaderHeight] = useState(72);
   const menuButton = useRef(null);
   const cinematic = useMedia(
     "(min-width: 1024px) and (min-height: 720px) and (prefers-reduced-motion: no-preference)",
@@ -485,6 +462,7 @@ function App() {
       ? config.contactEmail.trim()
       : null;
   return (
+    <SettingsContext.Provider value={config}>
     <>
       <a href="#main" className="skip-link">
         본문으로 바로가기
@@ -565,17 +543,17 @@ function App() {
           <div className="hero-shade" />
           <div className="hero-content shell">
             <p className="hero-location">
-              홍콩 와인 컨시어지<span>서비스 준비 중</span>
+              프랑스 프리미엄 와인<span>서비스 준비 중</span>
             </p>
             <h1 id="hero-title">
-              찾던 빈티지,
+              홍콩에서 구매하고,
               <br />
-              홍콩에서 구하다.
+              찾아갈 때까지 보관.
             </h1>
             <p className="hero-description">
-              프랑스 프리미엄 와인 구매·보관.
+              프랑스 프리미엄 와인 구매·보관 컨시어지.
               <br />
-              사전 예약 후 홍콩 현지 수령.
+              수령은 홍콩 현지에서 사전 예약으로.
             </p>
             <div className="hero-actions">
               <FormLink className="button-light" previewHref="#research" pendingLabel="리서치 알아보기" onPending={pending}>
@@ -586,7 +564,7 @@ function App() {
               </a>
             </div>
             <p className="hero-preparing">
-              구매할 때와 홍콩에서 찾아갈 때를 나눌 수 있다면.
+              정식 출시 전, 와인 구매 경험을 듣고 있습니다.
             </p>
           </div>
           <div className="hero-bottom shell">
@@ -835,7 +813,6 @@ function App() {
         </button>
       </dialog>
     </>
+    </SettingsContext.Provider>
   );
 }
-
-createRoot(document.getElementById("root")).render(<App />);
