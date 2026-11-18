@@ -1916,3 +1916,54 @@ p {text-wrap:pretty}
 .survey-pending {margin:1.75rem 0 0;color:#d4c5ce;font-size:.9375rem;line-height:1.7}
 .newsletter-pending {padding:0;background:none;border:0;box-shadow:none}
 .newsletter-pending-description {margin:0;color:var(--muted);font-size:1rem;line-height:1.8}
+
+/* Shared transparent artwork; CSS supplies the lighting, not another bitmap. */
+.wine-scene {
+  position:relative;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  isolation:isolate;
+  background:
+    radial-gradient(ellipse at 67% 68%,#72364c80 0%,transparent 65%),
+    linear-gradient(145deg,#0d090c,#24121c 64%,#080608);
+}
+.wine-scene--detail {
+  background:
+    radial-gradient(ellipse at 72% 68%,#a27b6533 0%,transparent 54%),
+    linear-gradient(155deg,#0d090c,#2b1821 68%,#100a0e);
+}
+.wine-artwork {
+  position:absolute;
+  display:block;
+  width:448px;
+  height:90%;
+  right:7%;
+  bottom:5%;
+}
+.wine-artwork img {
+  display:block;
+  width:100%;
+  height:100%;
+  max-width:100%;
+  aspect-ratio:auto;
+  object-fit:contain;
+  object-position:center bottom;
+  opacity:1;
+}
+.wine-scene--detail .wine-artwork {right:2%}
+.story-media .story-photo {position:absolute;inset:0}
+.static-chapter figure,.collection-photo {aspect-ratio:3/2}
+.collection-photo {position:relative}
+.static-chapter figure>.wine-scene,.collection-photo>.wine-scene {position:absolute;inset:0}
+.static-chapter .wine-artwork,.collection-photo .wine-artwork {right:50%;transform:translateX(50%)}
+.research-visual .wine-artwork {opacity:.5}
+@media(min-width:761px) and (prefers-reduced-motion:no-preference) {
+  .collection-photo {position:sticky}
+}
+@media(max-width:1023px) {
+  .wine-artwork {width:34vw}
+}
+@media(max-width:760px) {
+  .wine-artwork {width:240px}
+}

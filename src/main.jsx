@@ -42,26 +42,47 @@ function useMedia(query) {
   }, [query]);
   return matches;
 }
-function Photo({
-  name,
-  className = "",
-  priority = false,
-  alt = "",
-  sizes = "100vw",
-}) {
+// A shared slot keeps the same selected resource warm across every scene.
+const artworkSizes = "(min-width: 1024px) 448px, (min-width: 761px) 34vw, 240px";
+const artworks = {
+  collection: { stem: "collection-cutout", webp: [256, 384, 640, 900], png: [384, 640], width: 900, height: 900 },
+  pair: { stem: "hero-cutout", webp: [320, 480, 900], png: [480, 900], width: 900, height: 1350 },
+};
+const compositions = {
+  "collection-cinematic": { family: "collection", look: "collection" },
+  "macro-cinematic": { family: "pair", look: "detail" },
+  "hero-cinematic": { family: "pair", look: "pair" },
+};
+function Artwork({ family, className, imageClassName, priority = false }) {
+  const image = artworks[family];
+  const imageRef = useRef(null);
+  const srcset = format => image[format].map(width => `${asset(`${image.stem}-${width}.${format}`)} ${width}w`).join(", ");
+  const fallbackSrc = asset(`${image.stem}-${image.png[0]}.png`);
+  const fallbackSet = srcset("png");
+  useLayoutEffect(() => {
+    // Set fallback attributes only after <img> is connected to its <picture>.
+    // Detached image.src assignment can start a speculative fallback download.
+    const node = imageRef.current;
+    if (!node) return;
+    node.setAttribute("srcset", fallbackSet);
+    node.setAttribute("src", fallbackSrc);
+  }, [fallbackSrc, fallbackSet]);
   return (
-    <img
-      className={className}
-      src={asset(`${name}-1536.webp`)}
-      srcSet={`${asset(`${name}-900.webp`)} 900w, ${asset(`${name}-1536.webp`)} 1536w`}
-      sizes={sizes}
-      width="1536"
-      height="1024"
-      alt={alt}
-      loading={priority ? "eager" : "lazy"}
-      fetchPriority={priority ? "high" : "auto"}
-      decoding="async"
-    />
+    <picture className={className} data-art-family={family}>
+      <source type="image/webp" srcSet={srcset("webp")} sizes={artworkSizes} />
+      <img ref={imageRef} className={imageClassName}
+        {...(typeof window === "undefined" ? { src: fallbackSrc, srcSet: fallbackSet } : {})}
+        sizes={artworkSizes} width={image.width} height={image.height} alt=""
+        loading={priority ? "eager" : "lazy"} decoding="async" fetchPriority={priority ? "high" : "auto"} />
+    </picture>
+  );
+}
+function Photo({ name, className = "" }) {
+  const { family, look } = compositions[name];
+  return (
+    <div className={`wine-scene wine-scene--${look} ${className}`} aria-hidden="true">
+      <Artwork family={family} className={`wine-artwork wine-artwork--${family}`} />
+    </div>
   );
 }
 function Logo({ className = "", dark = false }) {
@@ -412,22 +433,7 @@ export function App({ settings = {} }) {
           </div>
           <div className="hero-visual">
             <div className="hero-visual-motion">
-              <picture className="hero-picture">
-                <source
-                  type="image/webp"
-                  srcSet={`${asset("hero-cutout-320.webp")} 320w, ${asset("hero-cutout-480.webp")} 480w, ${asset("hero-cutout-900.webp")} 900w`}
-                  sizes="(min-width: 1024px) 448px, (min-width: 761px) 34vw, 240px"
-                />
-                <img
-                  className="hero-photo"
-                  src={asset("hero-cutout-480.png")}
-                  srcSet={`${asset("hero-cutout-480.png")} 480w, ${asset("hero-cutout-900.png")} 900w`}
-                  sizes="(min-width: 1024px) 448px, (min-width: 761px) 34vw, 240px"
-                  width="900" height="1350"
-                  alt=""
-                  loading="eager" fetchPriority="high" decoding="async"
-                />
-              </picture>
+              <Artwork family="pair" className="hero-picture" imageClassName="hero-photo" priority />
               <HeroLight />
               <div className="hero-shade" />
             </div>

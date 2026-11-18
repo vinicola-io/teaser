@@ -238,9 +238,11 @@ test("studio light loops continuously without controls and pauses outside the sc
   }
   await page.locator("#newsletter").scrollIntoViewIfNeeded();
   await expect(hero).toHaveAttribute("data-ambient-running", "false");
-  await expect.poll(() => area.evaluate(node => node.getAnimations({ subtree: true }).every(animation => animation.playState === "paused"))).toBe(true);
+  await expect.poll(() => area.evaluate(node => node.getAnimations({ subtree: true }).every(animation => animation.playState === "paused" && !animation.pending))).toBe(true);
   const stopped = await area.evaluate(async node => {
     const animations = node.getAnimations({ subtree: true });
+    // WebKit commits the paused hold time on the next rendering update.
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     const before = animations.map(animation => animation.currentTime);
     await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     return { before, after: animations.map(animation => animation.currentTime) };
@@ -301,7 +303,8 @@ test("project Pages paths, initial HTML and preload references resolve to built 
     if (/hero-cutout-.*\.(?:webp|png)$/.test(new URL(request.url()).pathname)) heroRequests.push(request.url());
   });
   await visit(page, baseURL);
-  expect(heroRequests, "Matching WebP preload/source must not also download PNG or a second hero").toHaveLength(1);
+  // The no-store fixture may request a cached-in-production URL again when story markup changes.
+  expect([...new Set(heroRequests)], "Matching preload and reused scenes must select one WebP variant").toHaveLength(1);
   expect(heroRequests[0]).toMatch(/\.webp$/);
   const references = await page.locator('script[src],link[rel="stylesheet"],link[rel="preload"]').evaluateAll(nodes => nodes.map(node => node.src || node.href));
   for (const url of references) {
@@ -325,4 +328,48 @@ test("unsupported WebP selects a working PNG fallback", async ({ page, context, 
   // Unsupported-format selection, not a promise of network-error recovery.
   await page.locator('.hero picture source[type="image/webp"]').evaluateAll(sources => sources.forEach(source => { source.type = "image/not-supported"; }));
   await expect.poll(() => image.evaluate(img => img.complete && img.naturalWidth > 0 && new URL(img.currentSrc).pathname.endsWith(".png"))).toBe(true);
+});
+
+test("shared transparent artwork stays within responsive image budgets", async ({ browser, baseURL }, info) => {
+  const samples = [];
+  for (const [width, height, dpr, budget, ready] of [[390, 844, 1, 35000], [390, 844, 3, 140000], [768, 1024, 2, 120000], [1440, 900, 1, 70000], [1440, 900, 2, 140000], [1440, 900, 1, 70000, true]]) {
+    const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: dpr, reducedMotion: "no-preference" });
+    await isolate(context, baseURL, ready ? formSettings : emptySettings);
+    const page = await context.newPage();
+    const images = new Map();
+    const reads = [];
+    page.on("response", response => {
+      if (/\.(?:webp|png)(?:\?|$)/.test(response.url())) reads.push(response.body().then(body => images.set(response.url(), body.length)));
+    });
+    try {
+      await visit(page, baseURL);
+      for (const section of ["#concierge", "#vintages", "#research", "#newsletter"]) {
+        await page.locator(section).scrollIntoViewIfNeeded();
+      }
+      await expect.poll(() => page.locator("main picture img").evaluateAll(nodes => nodes.every(node => node.complete && node.naturalWidth > 0))).toBe(true);
+      await Promise.all(reads);
+      const urls = [...images.keys()];
+      const bytes = [...images.values()].reduce((sum, value) => sum + value, 0);
+      expect(urls).toHaveLength(2);
+      expect(urls.every(url => /\/(hero|collection)-cutout-\d+\.webp$/.test(new URL(url).pathname))).toBe(true);
+      expect(bytes).toBeLessThanOrEqual(budget);
+      await noHorizontalOverflow(page);
+      samples.push({ width, height, dpr, ready: Boolean(ready), bytes, budget, images: Object.fromEntries(images) });
+    } finally { await context.close(); }
+  }
+  await info.attach("responsive-image-budgets", { body: JSON.stringify(samples, null, 2), contentType: "application/json" });
+});
+
+test("body artwork has working PNG alternatives with reserved layout space", async ({ page, context, baseURL }) => {
+  await isolate(context, baseURL);
+  await visit(page, baseURL);
+  expect(await page.locator(".wine-artwork").count()).toBe(5);
+  const images = page.locator(".wine-artwork img");
+  expect(await images.evaluateAll(nodes => nodes.every(node => node.width > 0 && node.height > 0 && node.getAttribute("alt") === "" && node.getAttribute("loading") === "lazy"))).toBe(true);
+  await page.locator('.wine-artwork source[type="image/webp"]').evaluateAll(nodes => nodes.forEach(node => { node.type = "image/not-supported"; }));
+  for (const section of ["#concierge", "#vintages", "#research"]) await page.locator(section).scrollIntoViewIfNeeded();
+  await expect.poll(() => images.evaluateAll(nodes => nodes.every(node => node.complete && node.naturalWidth > 0 && new URL(node.currentSrc).pathname.endsWith(".png")))).toBe(true);
+  const geometry = await page.locator(".static-chapter figure,.collection-photo").evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect()));
+  expect(geometry.every(box => box.width > 0 && box.height > 0)).toBe(true);
+  await noHorizontalOverflow(page);
 });

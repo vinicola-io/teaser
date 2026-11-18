@@ -36,7 +36,7 @@ Hero는 일반 문서 흐름입니다. 큰 화면에서 지원하는 브라우�
 
 ## 이미지와 폰트
 
-Hero는 **투명 WebP + CSS 배경**입니다. 같은 비율의 PNG를 `<picture>`의 형식 호환 대체로 두어, 지원하는 브라우저는 WebP만 받습니다. PNG는 WebP의 네트워크 오류를 자동 복구하는 용도가 아닙니다. preload의 `type`·`srcset`·`sizes`를 실제 source와 맞췄습니다.
+Hero와 본문은 **투명 WebP + CSS 배경**입니다. 보틀·잔과 세 병 컬렉션 두 이미지 묶음을 장면별로 재사용합니다. 같은 비율의 PNG를 `<picture>`의 형식 호환 대체로 두어, 지원하는 브라우저는 WebP만 받습니다. PNG는 WebP의 네트워크 오류를 자동 복구하는 용도가 아닙니다. preload의 `type`·`srcset`·`sizes`를 실제 source와 맞췄습니다.
 
 | 배포용 Hero | 실제 파일 크기 | 용도 |
 |---|---:|---|
@@ -45,9 +45,30 @@ Hero는 **투명 WebP + CSS 배경**입니다. 같은 비율의 PNG를 `<picture
 | WebP 900×1350 | 76,998 B | 높은 픽셀 밀도 |
 | PNG 480×720 / 900×1350 | 194,950 / 665,053 B | 투명도를 보존하는 형식 호환 대체 |
 
-브라우저가 화면과 DPR에 맞는 소스를 고릅니다. 투명화 자체가 용량 절감을 보장하지 않으므로, 기존 WebP와 용량·표현을 비교해 선택했습니다. 본문의 불투명 사진은 기존 WebP를 유지하고 로고는 SVG로 제공합니다. 선택되지 않은 PNG까지 내려받지 않는지 테스트에서 확인합니다. 형식 선택 근거: [MDN picture](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/picture), [이미지 형식](https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Formats/Image_types).
+브라우저가 화면과 DPR에 맞는 소스를 고릅니다. 투명화 자체가 용량 절감을 보장하지 않으므로, 기존 WebP와 용량·표현을 비교해 선택했습니다. 본문의 구매·보관·수령·설문·와인 장면도 같은 투명 이미지와 CSS 조명을 사용하며 로고는 SVG로 제공합니다. 모든 사용처의 `srcset/sizes`를 맞춰 다른 해상도를 중복 선택하지 않도록 합니다. 선택되지 않은 PNG까지 내려받지 않는지 테스트에서 확인합니다. 형식 선택 근거: [MDN picture](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/picture), [이미지 형식](https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Formats/Image_types).
 
-보틀·잔·매크로·컬렉션은 **상표 없는 AI 연출 이미지**이며 화면에서는 장식 이미지로 처리하고 AI·재고·제품사진 캡션은 넣지 않습니다. 실제 상품·재고·보관 시설의 증거로 쓰지 않습니다. Hero는 기존 연출컷의 배경 제거 편집본입니다. 이미지 도구가 실제 모델 ID를 반환하지 않아 특정 모델명을 표기하지 않습니다. 제작 프롬프트와 수정 이유는 Git에 남깁니다.
+세 병 컬렉션도 배경을 제거하고 작은 크기로 제공합니다.
+
+| 컬렉션 소스 | 실제 파일 크기 |
+|---|---:|
+| WebP 256 / 384 / 640 / 900px | 8,838 / 14,554 / 28,100 / 48,524 B |
+| PNG 384 / 640px | 94,200 / 259,735 B |
+
+본문은 lazy loading을 유지하고, 3:2 장면과 이미지 치수를 미리 확보합니다. 장면의 전환·스크롤 transform은 바깥 프레임에, 비율과 `contain`은 안쪽 이미지에 적용합니다. 사용하지 않는 기존 배경 사진은 배포 폴더에서 제외하며 과거 원본은 Git에 있습니다. 파일 삭제에 따른 배포 폴더 감소와 실제 로딩 감소는 구분합니다.
+
+동일 화면·DPR로 전체 스크롤 후 고유 래스터 소스 본문을 비교한 결과입니다. HTTP 헤더·JS·CSS·폰트를 포함한 전체 전송량이 아닙니다.
+
+| 화면 / DPR | 이전 → 변경 후 | 감소 |
+|---|---:|---:|
+| 390px / 1 | 62,522 → 25,522 B | 59.2% |
+| 390px / 3 | 210,812 → 125,522 B | 40.5% |
+| 768px / 2 | 210,812 → 105,098 B | 50.1% |
+| 1440px / 1 | 162,424 → 56,710 B | 65.1% |
+| 1440px / 2 | 210,812 → 125,522 B | 40.5% |
+
+정상 WebP 화면은 두 소스 URL을 공유하고 PNG를 받지 않습니다. 서버 HTML에는 PNG 대체 주소를 포함하고, 브라우저에서 새로 만드는 이미지는 picture에 연결한 뒤 대체 속성을 설정합니다. 동적 DOM 조작 중 대체 파일이 추가 요청되는 유형은 [WebKit 사례](https://bugs.webkit.org/show_bug.cgi?id=215805)도 참고했습니다. 로컬 검사용 서버는 `no-store`이므로 같은 URL이 장면 교체 때 다시 요청될 수 있습니다. 선택된 소스 종류·고유 파일 바이트 예산은 CI에서 검사하고, 실제 캐시·전송량은 배포 페이지의 ResourceTiming으로 확인합니다.
+
+보틀·잔·컬렉션은 **상표 없는 AI 연출 이미지**이며 화면에서는 장식 이미지로 처리하고 AI·재고·제품사진 캡션은 넣지 않습니다. 실제 상품·재고·보관 시설의 증거로 쓰지 않습니다. Hero는 기존 연출컷의 배경 제거 편집본입니다. 이미지 도구가 실제 모델 ID를 반환하지 않아 특정 모델명을 표기하지 않습니다. 제작 프롬프트와 수정 이유는 Git에 남깁니다.
 
 한글은 [Noto Sans KR](https://github.com/google/fonts/tree/main/ofl/notosanskr)의 문구 부분집합입니다. 새 한글 문구를 넣으면 글리프 포함 여부를 확인하고 갱신합니다. 워드마크는 [Noto Serif](https://github.com/google/fonts/tree/main/ofl/notoserif)의 SVG 경로이며 추가 폰트를 요청하지 않습니다. 라이선스는 `public/assets/OFL-*.txt`에 있습니다. 빌드는 폰트·JS·CSS의 내용 해시로 캐시를 구분합니다.
 
@@ -68,6 +89,7 @@ npm run test:ui:report
 - 설문/뉴스레터의 준비·연결 상태, URL 검증, 선택 동의의 분리.
 - 동작 줄이기, JavaScript 비활성, 초기 HTML·Pages 자산 경로·이미지 preload·PNG 대체.
 - axe의 WCAG A/AA 자동 검사, 화면 캡처와 브라우저 버전 기록.
+- 5개 화면/DPR의 이미지 바이트 예산, 두 소스 재사용, 모든 본문 PNG 대체와 레이아웃 공간 확보.
 
 `.github/workflows/pages.yml`은 PR과 `main` 푸시에서 **설치 → 빌드 → 검사**를 실행합니다. 검사가 실패하면 Pages 업로드와 배포를 진행하지 않습니다. PR에서는 테스트만 실행합니다. 성공한 `main`만 배포하며, 화면·axe 원문·실패 trace·HTML 리포트는 Actions artifact에서 7일간 확인합니다. 테스트와 개발 의존성은 공개 사이트의 브라우저 번들에 포함하지 않습니다.
 
