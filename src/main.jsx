@@ -380,7 +380,7 @@ export function App({ settings = {} }) {
   const opener = useRef(null);
   const hero = useRef(null);
   const progressBar = useRef(null);
-  const light = useHeroLight(hero);
+  useHeroLight(hero);
   useHeroEntrance(hero);
   const header = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(72);
@@ -572,18 +572,6 @@ export function App({ settings = {} }) {
             </div>
           </div>
           <div className="hero-bottom shell">
-            <button
-              className="hero-light-control"
-              type="button"
-              hidden={!light.available}
-              onClick={light.onToggle}
-              aria-label={light.running ? "빛 멈추기 (첫 화면 연출)" : "빛 다시 보기 (첫 화면 연출)"}
-            >
-              <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
-                {light.running ? <path d="M7 5v10M13 5v10" /> : <path d="M7 4.5 15 10l-8 5.5Z" />}
-              </svg>
-              {light.running ? "빛 멈추기" : "빛 다시 보기"}
-            </button>
             <span className="hero-image-note">AI 연출 이미지</span>
           </div>
         </section>

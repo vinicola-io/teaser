@@ -28,11 +28,11 @@ npm run preview
 | 가독성 | 본문 행간 1.7 전후, 한글 어절과 실제 줄바꿈을 확인합니다. 긴 제목은 좁은 화면·확대 시 필요한 위치에서 줄을 바꿀 수 있습니다. 320px·글자 확대·간격 변경을 함께 점검합니다. |
 | 대비와 깊이 | 메를로 주변광·어두운 바탕·투명 피사체를 분리합니다. 밝은 섹션은 아이보리 그라데이션을 사용합니다. 본문은 단색으로 두며 일반 글자 4.5:1, 큰 글자 3:1을 기준으로 실제 배경에서 확인합니다. |
 | 문체 | 짧고 정중한 설명과 선택권을 우선합니다. 과장된 수식·효과 보장·미확인 신뢰 주장을 넣지 않습니다. 구매·보관·수령·환매는 검토할 구상으로 설명합니다. |
-| 동작 | 제목은 처음부터 읽을 수 있으며 설명·CTA·수요 조사 고지는 변형하지 않습니다. 빛 연출은 3.8초 한 번 실행하고 멈춤/재생을 제공합니다. 동작 줄이기·JavaScript 비활성에서는 정적으로 읽을 수 있습니다. |
+| 동작 | 제목은 처음부터 읽을 수 있으며 설명·CTA·수요 조사 고지는 변형하지 않습니다. 배경 조명 두 겹이 18초 주기로 천천히 순환합니다. 별도 애니메이션 버튼·곡선·광선·마우스 추종은 없습니다. 화면 이탈·탭 숨김에서는 같은 위상으로 일시 정지하고 돌아오면 재개합니다. 동작 줄이기·JavaScript 비활성에서는 정적으로 읽을 수 있습니다. |
 
 Hero는 일반 문서 흐름입니다. 큰 화면에서 지원하는 브라우저만 native scroll timeline을 사용합니다. 본문 스토리의 고정 장면은 너비 1024px·높이 720px 이상에서만 적용하며, 그 외에는 세 장면을 순서대로 보여줍니다. 반복되는 큰 blur 애니메이션과 터치 스크롤 가로채기는 사용하지 않습니다.
 
-근거: [상대 단위](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/length), [반응형 타이포그래피](https://web.dev/learn/design/typography), [200% 텍스트 확대](https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html). 상대 단위 사용이나 자동 검사 통과만으로 전체 접근성 준수를 판정하지 않습니다.
+근거: [상대 단위](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/length), [반응형 타이포그래피](https://web.dev/learn/design/typography), [200% 텍스트 확대](https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html). 상대 단위 사용이나 자동 검사 통과만으로 전체 접근성 준수를 판정하지 않습니다. 버튼 없는 자동 반복에는 별도 정지 조작이 없으므로 [WCAG 2.2.2](https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html) 충족을 주장하지 않습니다.
 
 ## 이미지와 폰트
 

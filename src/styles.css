@@ -1746,84 +1746,57 @@ p {text-wrap:pretty}
 }
 .hero-description {word-break:keep-all;overflow-wrap:break-word}
 
-/* A single finite light scene, isolated from the static reading layer. */
-.hero-shade {z-index:1;pointer-events:none}
+/* A quiet studio-light cycle: two soft sources behind a stable photograph. */
+.hero-shade {z-index:2;pointer-events:none}
 .hero-atmosphere {
   position:absolute;
-  inset:var(--header-height) 0 0 34%;
+  inset:0;
   z-index:0;
   overflow:hidden;
   pointer-events:none;
-  isolation:isolate;
-  mask-image:linear-gradient(90deg,transparent,#000 18%,#000 92%,transparent),linear-gradient(180deg,transparent,#000 12%,#000 86%,transparent);
+  contain:paint;
+  mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent),linear-gradient(180deg,transparent,#000 16%,#000 78%,transparent);
   mask-composite:intersect;
 }
-.hero-glow {
+.hero-light-pool,
+.hero-light-softbox {
   position:absolute;
-  inset:8% 2% -12% 0;
-  opacity:0;
-  background:radial-gradient(ellipse at 53% 62%,#853d5375 0%,#be8a802e 26%,transparent 63%);
-  mix-blend-mode:screen;
-  transition:transform .18s ease-out;
+  inset:-8% -12%;
+  transform-origin:50% 65%;
 }
-.hero-beam {
-  position:absolute;
-  top:-22%;
-  left:-15%;
-  width:52%;
-  height:150%;
-  opacity:0;
-  background:linear-gradient(90deg,transparent 0%,#cf9e9d09 20%,#e6c7b640 48%,#fff4df2e 53%,#c48b9410 70%,transparent 100%);
-  border-radius:50%;
-  mix-blend-mode:screen;
+.hero-light-pool {
+  opacity:.48;
+  background:radial-gradient(ellipse at 47% 63%,#a85d7166 0%,#74344845 26%,#4823331c 48%,transparent 72%);
 }
-.hero-filament {
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  opacity:0;
-  overflow:visible;
-  transform-origin:55% 60%;
-  mix-blend-mode:screen;
+.hero-light-softbox {
+  opacity:.24;
+  background:radial-gradient(ellipse 27% 52% at 64% 61%,#c5a48e47 0%,#a26e7b21 40%,transparent 76%);
 }
-@media (prefers-reduced-motion:no-preference) {
-  .hero[data-light-active="true"] .hero-glow {opacity:.45}
-  .hero[data-light-active="true"] .hero-filament {opacity:0}
-}
-.hero-bottom {gap:12px;flex-wrap:wrap;min-height:44px}
+.hero-bottom {gap:.75rem;flex-wrap:wrap;min-height:2.75rem}
 .hero-image-note {margin-left:auto}
-.hero-light-control {
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:.7em;
-  min-height:2.75rem;
-  max-width:100%;
-  padding:.69em 1.08em;
-  border:1px solid #c29ba34d;
-  border-radius:999px;
-  background:#100b1099;
-  color:#e0ced8;
-  font-size:.8125rem;
-  line-height:1.4;
-  word-break:keep-all;
+@media (prefers-reduced-motion:no-preference) {
+  .hero[data-ambient-ready="true"] .hero-light-pool {
+    animation:hero-studio-wine 18s ease-in-out infinite;
+    animation-play-state:paused;
+  }
+  .hero[data-ambient-ready="true"] .hero-light-softbox {
+    animation:hero-studio-satin 18s ease-in-out infinite;
+    animation-play-state:paused;
+  }
+  .hero[data-ambient-running="true"] :is(.hero-light-pool,.hero-light-softbox) {
+    animation-play-state:running;
+  }
 }
-.hero-light-control[hidden] {display:none}
-.hero-light-control svg {flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}
-.hero-light-control:hover {background:#2d1b25;color:#fff}
-@media (min-width:761px) and (max-width:1100px) and (max-aspect-ratio:1/1) {
-  .hero-atmosphere {inset:auto 0 0 20%;height:68%}
+@keyframes hero-studio-wine {
+  0%,100% {opacity:.34;transform:translate3d(-3%,1%,0) scale(1)}
+  50% {opacity:.68;transform:translate3d(3%,-1%,0) scale(1.04)}
 }
-@media (max-width:760px) and (orientation:portrait) {
-  .hero-atmosphere {inset:auto -4% 0;height:56%}
-}
-@media (max-height:600px) and (min-width:600px) {
-  .hero-atmosphere {inset:var(--header-height) 0 0 42%}
-  .hero-bottom {position:relative;inset:auto;padding-bottom:12px}
+@keyframes hero-studio-satin {
+  0%,100% {opacity:.34;transform:translate3d(3%,-1%,0) scale(1.02)}
+  50% {opacity:.12;transform:translate3d(-3%,1%,0) scale(1)}
 }
 @media (prefers-reduced-motion:reduce) {
-  .hero-atmosphere,.hero-light-control {display:none!important}
+  .hero-light-pool,.hero-light-softbox {animation:none!important;transform:none!important}
 }
 
 /* Editorial hero: type leads, the complete bottle follows in ordinary flow. */
@@ -1864,7 +1837,8 @@ p {text-wrap:pretty}
   overflow:hidden;
   overflow:clip;
 }
-.hero--editorial .hero-visual-motion {position:absolute;inset:0;transform-origin:50% 62%}
+.hero--editorial .hero-visual-motion {position:absolute;inset:0;transform-origin:50% 62%;isolation:isolate}
+.hero--editorial .hero-picture {position:relative;display:block;width:100%;height:100%;z-index:1}
 .hero--editorial .hero-photo {
   inset:auto auto 0 50%;
   width:auto;
@@ -1876,8 +1850,8 @@ p {text-wrap:pretty}
   transform:translateX(-50%)!important;
   mask-image:none;
 }
-.hero--editorial .hero-shade {inset:0;background:linear-gradient(180deg,transparent 82%,#08060780 100%)}
-.hero--editorial .hero-atmosphere {inset:0 10%;height:auto}
+.hero--editorial .hero-shade {inset:0;background:none}
+.hero--editorial .hero-atmosphere {inset:0;height:auto}
 .hero--editorial .hero-bottom {
   position:relative;
   inset:auto;

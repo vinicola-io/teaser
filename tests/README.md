@@ -2,7 +2,7 @@
 
 Node24에서 `npm ci`, `npx playwright install --with-deps chromium`, `npm test`를 실행한다. GitHub Actions는 PR과 main push에서 같은 검사를 실행하며, build와 모든 테스트가 성공한 main만 Pages에 배포한다. PR은 배포하지 않는다.
 
-15개 테스트가 desktop1440·tablet768·mobile390, 320px/기본 글자200%·사용자 텍스트 간격, axe의 WCAG A/AA 검사, 키보드·메뉴·dialog·FAQ, 수요조사 상태, 독립 폼 링크, 모션 감소와 no-JS, `/teaser/` 경로·preload 및 PNG fallback을 다룬다. 화면 첨부는 사람이 확인하는 리뷰 자료이며 자동 픽셀 비교가 아니다. 전체 문장의 일치나 운영체제별 픽셀 baseline은 요구하지 않는다.
+16개 테스트가 desktop1440·tablet768·mobile390, 320px/기본 글자200%·사용자 텍스트 간격, axe의 WCAG A/AA 검사, 키보드·메뉴·dialog·FAQ, 수요조사 상태, 독립 폼 링크, 조명 무한반복·화면/탭 이탈 pause/resume·동작 줄이기와 no-JS, `/teaser/` 경로·preload 및 PNG fallback을 다룬다. 화면 첨부는 사람이 확인하는 리뷰 자료이며 자동 픽셀 비교가 아니다. 전체 문장의 일치나 운영체제별 픽셀 baseline은 요구하지 않는다.
 
 - 실행 결과: `playwright-report/`, `test-results/results.json`. `npm run test:ui:report`로 HTML 보고서를 연다.
 - 3크기 진입 화면, axe 원문(미판정 포함), 실제 브라우저 버전·모션 지원·빌드 자산 크기가 첨부된다. 실패 시 screenshot과 trace를 보존하며 영상과 자동 재시도는 사용하지 않는다.

@@ -213,12 +213,67 @@ test("motion preference changes stop decoration while preserving reading and nat
   await info.attach("motion-capabilities", { body: JSON.stringify(capabilities), contentType: "application/json" });
   await page.evaluate(() => scrollTo(0, Math.min(innerHeight * .3, document.querySelector(".hero").offsetHeight / 3)));
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(page.locator(".hero-light-control")).not.toBeVisible();
+  await expect(page.locator(".hero-light-control")).toHaveCount(0);
   await expect.poll(() => page.locator(".hero").evaluate(hero => hero.getAnimations({ subtree: true }).filter(animation => animation.playState === "running").length)).toBe(0);
   await page.evaluate(() => scrollTo(0, 0));
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(page.locator('.hero [data-form-link="research"]')).toBeVisible();
   await noHorizontalOverflow(page);
+});
+
+test("studio light loops continuously without controls and pauses outside the scene", async ({ page, context, baseURL }, info) => {
+  await isolate(context, baseURL);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await visit(page, baseURL);
+  await expect(page.locator(".hero-light-control,.hero-filament,.hero-beam")).toHaveCount(0);
+  const hero = page.locator(".hero");
+  const area = page.locator(".hero-atmosphere");
+  await page.locator(".hero-visual").scrollIntoViewIfNeeded();
+  await expect(hero).toHaveAttribute("data-ambient-running", "true");
+  const loops = await area.evaluate(node => node.getAnimations({ subtree: true }).map(animation => {
+    const timing = animation.effect.getTiming();
+    const keys = animation.effect.getKeyframes();
+    return { duration: timing.duration, infinite: timing.iterations === Infinity,
+      state: animation.playState, first: keys[0], last: keys.at(-1) };
+  }));
+  expect(loops).toHaveLength(2);
+  for (const loop of loops) {
+    expect(loop.duration).toBe(18000);
+    expect(loop.infinite).toBe(true);
+    expect(loop.state).toBe("running");
+    expect(loop.first.opacity).toBe(loop.last.opacity);
+    expect(loop.first.transform).toBe(loop.last.transform);
+  }
+  await page.locator("#newsletter").scrollIntoViewIfNeeded();
+  await expect(hero).toHaveAttribute("data-ambient-running", "false");
+  await expect.poll(() => area.evaluate(node => node.getAnimations({ subtree: true }).every(animation => animation.playState === "paused"))).toBe(true);
+  const stopped = await area.evaluate(async node => {
+    const animations = node.getAnimations({ subtree: true });
+    const before = animations.map(animation => animation.currentTime);
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    return { before, after: animations.map(animation => animation.currentTime) };
+  });
+  expect(stopped.after).toEqual(stopped.before);
+  await page.locator(".hero-visual").scrollIntoViewIfNeeded();
+  await expect(hero).toHaveAttribute("data-ambient-running", "true");
+  const resumed = await area.evaluate(node => node.getAnimations({ subtree: true }).map(animation => animation.currentTime));
+  resumed.forEach((time, index) => expect(time).toBeGreaterThanOrEqual(stopped.before[index]));
+  // Test only the visibility lifecycle input; this is not an OS tab-switch claim.
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, value: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect(hero).toHaveAttribute("data-ambient-running", "false");
+  await page.evaluate(() => {
+    delete document.hidden;
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect(hero).toHaveAttribute("data-ambient-running", "true");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect.poll(() => area.evaluate(node => node.getAnimations({ subtree: true }).length)).toBe(0);
+  await expect(hero).toHaveAttribute("data-ambient-running", "false");
+  await expect(area).toBeVisible();
+  await info.attach("studio-loop", { body: JSON.stringify({ loops, stopped, resumed }), contentType: "application/json" });
 });
 
 test("without JavaScript the full service context, FAQ and navigation remain readable", async ({ browser, baseURL }) => {
