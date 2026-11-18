@@ -6,6 +6,11 @@ await cp("public", "dist", { recursive: true });
 const result = await build({
   entryPoints: ["src/main.jsx"],
   bundle: true,
+  alias: {
+    "react-dom/client": "preact/compat/client",
+    "react-dom": "preact/compat",
+    react: "preact/compat",
+  },
   minify: true,
   format: "esm",
   target: ["es2022"],
