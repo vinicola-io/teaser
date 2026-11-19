@@ -107,16 +107,38 @@ test("skip link and mobile menu work with keyboard without a reload", async ({ p
   expect(await page.evaluate(() => window.__testNavigationMarker)).toBe(true);
 });
 
-test("unconnected forms show plain notices without dead actions or editorial clutter", async ({ page, context, baseURL }) => {
-  await isolate(context, baseURL);
+test("newsletter design and survey placeholder do not submit or store information", async ({ page, context, baseURL }) => {
+  const blocked = await isolate(context, baseURL);
   await visit(page, baseURL);
-  await expect(page.locator("#research .survey-pending")).toHaveText("설문을 준비하고 있습니다.");
-  await expect(page.locator('#research [data-form-link],.hero [data-form-link],#newsletter button,#newsletter input,dialog')).toHaveCount(0);
+  const url = page.url();
+  const submissions = [];
+  page.on("request", request => {
+    if (request.method() !== "GET" || request.resourceType() === "document") submissions.push(request.url());
+  });
+  const survey = page.locator('#research a[data-form-link="research"]');
+  await expect(survey).toHaveText("설문조사 참여하기");
+  await expect(survey).toHaveAttribute("href", "#");
+  await expect(survey).toHaveAttribute("aria-disabled", "true");
+  await survey.focus();
+  await page.keyboard.press("Enter");
+  expect(page.url()).toBe(url);
+  const form = page.getByRole("form", { name: "뉴스레터 구독" });
+  const email = form.getByLabel("이메일 주소", { exact: true });
+  await expect(email).toBeEnabled();
+  await expect(form.getByRole("button", { name: "뉴스레터 구독하기" })).toBeDisabled();
+  await email.fill("design-preview@example.test");
+  await email.press("Enter");
+  await form.evaluate(node => node.requestSubmit());
+  await expect(email).toHaveValue("design-preview@example.test");
+  expect(await form.evaluate(node => [...new FormData(node)])).toEqual([]);
+  expect(page.url()).toBe(url);
+  expect(submissions).toEqual([]);
+  expect(await page.evaluate(() => localStorage.length + sessionStorage.length)).toBe(0);
+  expect(await context.cookies()).toEqual([]);
+  expect(blocked).toEqual([]);
+  await expect(page.locator('.hero [data-form-link],dialog')).toHaveCount(0);
   await expect(page.locator(".header-actions .button,.story-controls,.hero-explore,.research-return,main figcaption,.hero-image-note,.research-image-note")).toHaveCount(0);
-  const text = await page.locator("body").innerText();
-  expect(text).not.toMatch(/리서치|서비스 구상|AI 연출|보유 재고|제품 사진/);
-  expect(await page.locator('main img:not([alt=""])').count()).toBe(0);
-  await expect(page.locator(".hero-description")).toContainText("준비");
+  expect(await page.locator("body").innerText()).not.toMatch(/리서치|서비스 구상|AI 연출|보유 재고|제품 사진|구독 완료|접수 완료/);
 });
 
 test("FAQ summaries support native keyboard disclosure", async ({ page, context, baseURL }) => {
@@ -142,7 +164,10 @@ test("empty configuration stays research-only and collects nothing", async ({ pa
   await page.locator("#faq summary").first().click();
   await expect(page.locator("#faq details").first()).toContainText("시작하지 않았습니다");
   await expect(page.locator('.hero [data-form-link="research"]')).toHaveCount(0);
-  await expect(page.locator("#newsletter input, #newsletter iframe, #newsletter form")).toHaveCount(0);
+  await expect(page.locator("#newsletter input[type=email]")).toHaveCount(1);
+  await expect(page.locator("#newsletter form")).toHaveCount(1);
+  await expect(page.locator("#newsletter iframe")).toHaveCount(0);
+  await expect(page.locator("#newsletter button")).toBeDisabled();
   await expect(page.getByRole("button", { name: /(?:주문|결제|환매|견적).*(?:신청|하기|진행)/ })).toHaveCount(0);
   expect(await page.evaluate(() => localStorage.length + sessionStorage.length)).toBe(0);
   expect(await context.cookies()).toEqual([]);
@@ -192,7 +217,8 @@ test("unsafe and editing URLs cannot become submission links", async ({ browser,
       await visit(page, baseURL);
       await expect(page.locator('.hero [data-form-link="research"]')).toHaveCount(0);
       await expect(page.locator('[data-form-link][target="_blank"]')).toHaveCount(0);
-      await expect(page.locator("#newsletter input, #newsletter iframe")).toHaveCount(0);
+      await expect(page.locator("#newsletter iframe")).toHaveCount(0);
+      await expect(page.locator("#newsletter button")).toBeDisabled();
     } finally { await context.close(); }
   }
 });

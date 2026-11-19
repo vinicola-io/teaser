@@ -94,12 +94,14 @@ function Logo({ className = "", dark = false }) {
     </span>
   );
 }
-function FormLink({ children, className = "" }) {
+function FormLink({ children, className = "", placeholder = false }) {
   const href = useContext(SettingsContext).researchUrl;
-  if (!href) return null;
+  if (!href && !placeholder) return null;
   return (
-    <a className={`button ${className}`} data-form-link="research" data-link-state="ready"
-      href={href} target="_blank" rel="noopener noreferrer" aria-label={`${children} (새 창)`}>
+    <a className={`button ${className}`} data-form-link="research" data-link-state={href ? "ready" : "placeholder"}
+      href={href || "#"}
+      {...(href ? { target: "_blank", rel: "noopener noreferrer", "aria-label": `${children} (새 창)` }
+        : { "aria-disabled": "true", "aria-label": `${children} (링크 준비 중)`, onClick: event => event.preventDefault() })}>
       {children}
     </a>
   );
@@ -213,6 +215,8 @@ function Story({ cinematic, headerHeight }) {
 }
 function Newsletter() {
   const [opened, setOpened] = useState(false);
+  const [previewEnabled, setPreviewEnabled] = useState(false);
+  useEffect(() => { setPreviewEnabled(true); }, []);
   const href = useContext(SettingsContext).newsletterUrl;
   let embedded = null;
   if (href && new URL(href).hostname === "docs.google.com") {
@@ -237,9 +241,18 @@ function Newsletter() {
         </div>
         <div className="newsletter-form-wrap">
           {!href ? (
-            <div className="newsletter-form newsletter-pending" aria-describedby="newsletter-state">
-              <p id="newsletter-state" className="newsletter-pending-description">뉴스레터 구독을 준비하고 있습니다.</p>
-            </div>
+            <form className="newsletter-form newsletter-preview" aria-label="뉴스레터 구독"
+              aria-describedby="newsletter-preview-note" onSubmit={event => event.preventDefault()}
+              onKeyDown={event => { if (event.key === "Enter") event.preventDefault(); }}>
+              <label htmlFor="newsletter-email">이메일 주소</label>
+              <div className="newsletter-input-row">
+                <input id="newsletter-email" type="email" inputMode="email" autoComplete="off"
+                  placeholder="이메일 주소를 입력해 주세요" aria-describedby="newsletter-preview-note"
+                  disabled={!previewEnabled} />
+                <button className="button button-dark" type="button" disabled>뉴스레터 구독하기</button>
+              </div>
+              <p id="newsletter-preview-note" className="form-note">구독 신청 기능은 준비 중입니다.</p>
+            </form>
           ) : (
             <div className="newsletter-ready">
               {embedded ? (
@@ -513,14 +526,8 @@ export function App({ settings = {} }) {
             <p className="section-description">
               최근 와인을 구매하면서 좋았던 점과 아쉬웠던 점을 들려주세요.
             </p>
-            {config.researchUrl ? (
-              <>
-                <FormLink className="button-light">설문에 답하기</FormLink>
-                <p className="form-note">참여 확인 후 질문 7개 · 추가 의견과 연락처는 선택입니다.</p>
-              </>
-            ) : (
-              <p className="survey-pending" role="status">설문을 준비하고 있습니다.</p>
-            )}
+            <FormLink className="button-light" placeholder>설문조사 참여하기</FormLink>
+            {config.researchUrl && <p className="form-note">참여 확인 후 질문 7개 · 추가 의견과 연락처는 선택입니다.</p>}
           </div>
         </section>
         <section

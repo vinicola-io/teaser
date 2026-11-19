@@ -1967,3 +1967,21 @@ p {text-wrap:pretty}
 @media(max-width:760px) {
   .wine-artwork {width:240px}
 }
+
+/* Newsletter design preview: local input only until collection is connected. */
+.newsletter-preview {max-width:34rem}
+.newsletter-preview label {font-size:.875rem;font-weight:500;color:var(--ink);margin-bottom:.75rem}
+.newsletter-input-row {display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.625rem;align-items:stretch}
+.newsletter-preview input[type=email] {
+  min-width:0;min-height:3.5rem;padding:1em 1.125em;border:1px solid #c7b9bf;
+  border-radius:.75rem;background:#fffaf6;color:#382e35;-webkit-text-fill-color:currentColor;font-size:1rem;
+}
+.newsletter-preview input::placeholder {color:#756770;opacity:1}
+.newsletter-preview input:focus-visible {outline:2px solid var(--wine);outline-offset:3px}
+.newsletter-preview .button {width:auto;min-height:3.5rem;border-radius:.75rem;padding-inline:1.3em;word-break:keep-all}
+.newsletter-preview .button:disabled {opacity:1;cursor:default;transform:none}
+.newsletter-preview .form-note {margin:.875rem 0 0;color:var(--muted);font-size:.8125rem;line-height:1.7}
+@media(max-width:600px) {
+  .newsletter-input-row {grid-template-columns:minmax(0,1fr)}
+  .newsletter-preview,.newsletter-preview .button {width:100%;max-width:none}
+}
