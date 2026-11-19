@@ -251,7 +251,7 @@ function Newsletter() {
                   disabled={!previewEnabled} />
                 <button className="button button-dark" type="button" disabled>뉴스레터 구독하기</button>
               </div>
-              <p id="newsletter-preview-note" className="form-note">구독 신청 기능은 준비 중입니다.</p>
+              <p id="newsletter-preview-note" className="form-note">프리미엄 와인 컨시어지 vinicola.io의 새로운 소식을 가장 먼저 받아보세요.</p>
             </form>
           ) : (
             <div className="newsletter-ready">
@@ -570,7 +570,7 @@ export function App({ settings = {} }) {
           </div>
           <div className="footer-bottom">
             <p>
-              한국에 거주하는 만 19세 이상을 위한 설문입니다.
+              vinicola.io는 프리미엄 와인 컨시어지 서비스 브랜드입니다.
             </p>
             <details className="privacy-note">
               <summary>개인정보 안내</summary>
